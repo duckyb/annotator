@@ -38,7 +38,8 @@ describe('annotator/anchoring/text-range', () => {
 
       jasmine.addMatchers({
         assertNodesEqual: () => ({
-          compare: (actual: Node, expect: Node) => assertNodesEqual(actual, expect),
+          compare: (actual: Node, expect: Node) =>
+            assertNodesEqual(actual, expect),
         }),
       });
     });
@@ -67,10 +68,7 @@ describe('annotator/anchoring/text-range', () => {
 
       it('resolves text position in middle of element to correct node and offset', () => {
         const containerText = container.textContent || '';
-        const pos = new TextPosition(
-          container,
-          containerText.indexOf('is a')
-        );
+        const pos = new TextPosition(container, containerText.indexOf('is a'));
 
         const { node, offset } = pos.resolve();
 
@@ -110,10 +108,7 @@ describe('annotator/anchoring/text-range', () => {
 
       it('throws if offset exceeds current text content length', () => {
         const containerText = container.textContent || '';
-        const pos = new TextPosition(
-          container,
-          containerText.length + 1
-        );
+        const pos = new TextPosition(container, containerText.length + 1);
 
         expect(() => {
           pos.resolve();

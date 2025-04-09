@@ -22,7 +22,12 @@ describe('annotator/anchoring/types', () => {
   });
 
   describe('RangeAnchor', () => {
-    let fakeSerialize: () => { startContainer: string; startOffset: number; endContainer: string; endOffset: number };
+    let fakeSerialize: () => {
+      startContainer: string;
+      startOffset: number;
+      endContainer: string;
+      endOffset: number;
+    };
     let fakeToRange: () => string;
 
     beforeEach(() => {
@@ -41,12 +46,17 @@ describe('annotator/anchoring/types', () => {
         endContainer: document.createElement('div'),
         limit: document.createElement('div'),
         text: 'sample text',
-        textNodes: [document.createTextNode('sample text')]
+        textNodes: [document.createTextNode('sample text')],
       } as unknown as NormalizedRange);
     });
 
     afterEach(() => {
-      fakeSerialize = (() => ({ startContainer: '', startOffset: 0, endContainer: '', endOffset: 0 })) as any;
+      fakeSerialize = (() => ({
+        startContainer: '',
+        startOffset: 0,
+        endContainer: '',
+        endOffset: 0,
+      })) as any;
       fakeToRange = (() => '') as any;
     });
 

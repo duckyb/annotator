@@ -9,7 +9,8 @@ describe('annotator/anchoring/xpath-util', () => {
   describe('getTextNodes', () => {
     let container: HTMLDivElement;
 
-    const nodeValues = (nodes: Node[]): (string | null)[] => nodes.map((n) => n.nodeValue);
+    const nodeValues = (nodes: Node[]): (string | null)[] =>
+      nodes.map((n) => n.nodeValue);
 
     beforeEach(() => {
       container = document.createElement('div');

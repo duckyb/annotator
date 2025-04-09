@@ -5,7 +5,7 @@ class EventEmitter<T = void> {
   private listeners: ((value: T) => void)[] = [];
 
   emit(value?: T): void {
-    this.listeners.forEach(listener => listener(value as T));
+    this.listeners.forEach((listener) => listener(value as T));
   }
 
   subscribe(listener: (value: T) => void): { unsubscribe: () => void } {
@@ -16,7 +16,7 @@ class EventEmitter<T = void> {
         if (index !== -1) {
           this.listeners.splice(index, 1);
         }
-      }
+      },
     };
   }
 }
@@ -73,7 +73,8 @@ export class SelectionModel {
     const handler = () => this.onSelectionChange();
     this.rootDocument.addEventListener('mouseup', handler);
     this.subscription = {
-      unsubscribe: () => this.rootDocument.removeEventListener('mouseup', handler)
+      unsubscribe: () =>
+        this.rootDocument.removeEventListener('mouseup', handler),
     };
   }
 

@@ -93,7 +93,7 @@ export async function anchor(
         {
           type: 'TextPositionSelector',
           start: textPositionSelector?.start ?? 0,
-          end: textPositionSelector?.end ?? 0
+          end: textPositionSelector?.end ?? 0,
         }
       );
       return querySelector(selectedAnchor, options)
@@ -109,15 +109,12 @@ export async function anchor(
 
   if (textQuoteSelector) {
     promise = promise.catch(() => {
-      const selectedAnchor = TextQuoteAnchor.fromSelector(
-        root as HTMLElement,
-        {
-          type: 'TextQuoteSelector',
-          exact: textQuoteSelector?.exact ?? '',
-          prefix: textQuoteSelector?.prefix,
-          suffix: textQuoteSelector?.suffix
-        }
-      );
+      const selectedAnchor = TextQuoteAnchor.fromSelector(root as HTMLElement, {
+        type: 'TextQuoteSelector',
+        exact: textQuoteSelector?.exact ?? '',
+        prefix: textQuoteSelector?.prefix,
+        suffix: textQuoteSelector?.suffix,
+      });
       return querySelector(selectedAnchor, options).then((range) =>
         Promise.resolve({
           range,

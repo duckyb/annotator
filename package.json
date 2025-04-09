@@ -15,7 +15,8 @@
     "lint": "eslint 'src/**/*.ts'",
     "lint:fix": "eslint 'src/**/*.ts' --fix",
     "test": "jest",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "prettify": "prettier --write 'src/**/*.ts'"
   },
   "author": "Duccio Breschi <breschi@netseven.it>",
   "license": "MIT",

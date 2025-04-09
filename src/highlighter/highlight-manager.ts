@@ -8,7 +8,7 @@ class EventEmitter<T> {
   private listeners: ((value: T) => void)[] = [];
 
   emit(value: T): void {
-    this.listeners.forEach(listener => listener(value));
+    this.listeners.forEach((listener) => listener(value));
   }
 
   subscribe(listener: (value: T) => void): { unsubscribe: () => void } {
@@ -19,7 +19,7 @@ class EventEmitter<T> {
         if (index !== -1) {
           this.listeners.splice(index, 1);
         }
-      }
+      },
     };
   }
 }
@@ -40,11 +40,16 @@ interface HighlightElementWithHandlers extends HighlightElement {
  * Manager for highlight elements and their events
  */
 export class HighlightManager {
-  private events = new EventEmitter<{ type: AnchorEvent; annotationId: string }>();
+  private events = new EventEmitter<{
+    type: AnchorEvent;
+    annotationId: string;
+  }>();
   events$ = {
-    subscribe: (callback: (event: { type: AnchorEvent; annotationId: string }) => void) => {
+    subscribe: (
+      callback: (event: { type: AnchorEvent; annotationId: string }) => void
+    ) => {
       return this.events.subscribe(callback);
-    }
+    },
   };
 
   /**
