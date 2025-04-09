@@ -119,13 +119,13 @@ Select some text and click "Create Annotation" to see the output here.</pre
 
     <script type="module">
       // Import from your bundled library
-      import { highlightRange, removeHighlights } from '../dist/index.esm.js';
+      import { Annotator } from '../dist/index.esm.js';
 
-      // Create a library object to maintain compatibility with the existing code
-      const library = {
-        highlightRange,
-        removeHighlights,
-      };
+      // Create an instance of the Annotator class
+      const annotator = new Annotator();
+      
+      // Set a mock document context
+      annotator.setContext('example-transcription-id');
 
       // Basic highlighting example
       function basicHighlighting() {
@@ -135,16 +135,29 @@ Select some text and click "Create Annotation" to see the output here.</pre
         if (selection.rangeCount > 0) {
           const range = selection.getRangeAt(0);
           if (!range.collapsed) {
-            // Apply highlighting
-            const highlights = library.highlightRange(
-              range,
-              'span',
-              'custom-highlight'
-            );
+            try {
+              // Create a mock annotation using the annotator
+              const annotationWithHighlights = annotator.createAnnotation(
+                contentElement,
+                range,
+                'example-collation-id',
+                'example-transcription-id'
+              );
+              
+              // Add custom class to highlights
+              if (annotationWithHighlights.highlights) {
+                annotationWithHighlights.highlights.forEach(highlight => {
+                  highlight.classList.add('custom-highlight');
+                });
+              }
 
-            // Store the highlights for later removal
-            window.currentHighlights = window.currentHighlights || [];
-            window.currentHighlights.push(...highlights);
+              // Store the annotation ID for later reference
+              window.currentAnnotationIds = window.currentAnnotationIds || [];
+              window.currentAnnotationIds.push(annotationWithHighlights.id);
+            } catch (e) {
+              console.error('Error highlighting:', e);
+              alert('Error creating highlight');
+            }
           } else {
             alert('Please select some text first');
           }
@@ -161,31 +174,33 @@ Select some text and click "Create Annotation" to see the output here.</pre
         if (selection.rangeCount > 0) {
           const range = selection.getRangeAt(0);
           if (!range.collapsed) {
-            // Apply highlighting
-            const highlights = library.highlightRange(
-              range,
-              'span',
-              'quote-highlight'
-            );
+            try {
+              // Create a full annotation using the annotator
+              const annotationWithHighlights = annotator.createAnnotation(
+                contentElement,
+                range,
+                'example-collation-id',
+                'example-transcription-id'
+              );
+              
+              // Add custom class to highlights
+              if (annotationWithHighlights.highlights) {
+                annotationWithHighlights.highlights.forEach(highlight => {
+                  highlight.classList.add('quote-highlight');
+                });
+              }
 
-            // Store the highlights for later removal
-            window.currentHighlights = window.currentHighlights || [];
-            window.currentHighlights.push(...highlights);
+              // Store the annotation ID for later reference
+              window.currentAnnotationIds = window.currentAnnotationIds || [];
+              window.currentAnnotationIds.push(annotationWithHighlights.id);
 
-            // Create a mock annotation
-            const annotation = {
-              id: 'anno-' + Math.random().toString(36).substring(2, 9),
-              text: range.toString(),
-              startContainer: range.startContainer.textContent,
-              startOffset: range.startOffset,
-              endContainer: range.endContainer.textContent,
-              endOffset: range.endOffset,
-              created: new Date().toISOString(),
-            };
-
-            // Display the annotation
-            document.getElementById('annotation-output').textContent =
-              JSON.stringify(annotation, null, 2);
+              // Display the annotation
+              document.getElementById('annotation-output').textContent =
+                JSON.stringify(annotationWithHighlights, null, 2);
+            } catch (e) {
+              console.error('Error creating annotation:', e);
+              alert('Error creating annotation');
+            }
           } else {
             alert('Please select some text first');
           }
@@ -196,9 +211,12 @@ Select some text and click "Create Annotation" to see the output here.</pre
 
       // Function to clear all annotations
       function clearAnnotations() {
-        if (window.currentHighlights && window.currentHighlights.length > 0) {
-          library.removeHighlights(window.currentHighlights);
-          window.currentHighlights = [];
+        if (window.currentAnnotationIds && window.currentAnnotationIds.length > 0) {
+          // Remove all annotations using the annotator
+          window.currentAnnotationIds.forEach(id => {
+            annotator.remove(id);
+          });
+          window.currentAnnotationIds = [];
           document.getElementById('annotation-output').textContent =
             'Select some text and click "Create Annotation" to see the output here.';
         } else {
@@ -213,8 +231,13 @@ Select some text and click "Create Annotation" to see the output here.</pre
         const annotationButton = document.getElementById('annotation-btn');
         const clearButton = document.getElementById('clear-btn');
 
-        // Initialize the highlights array
-        window.currentHighlights = [];
+        // Initialize the annotation IDs array
+        window.currentAnnotationIds = [];
+        
+        // Subscribe to annotator events
+        annotator.getEvents().on('highlight', (event) => {
+          console.log('Highlight event:', event);
+        });
 
         // Add event listeners
         highlightButton.addEventListener('click', basicHighlighting);

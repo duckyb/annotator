@@ -114,6 +114,32 @@ export interface WebPage {
   pageMetadata?: WebPageMetadata[];
 }
 
+/**
+ * Interface for the event emitter
+ */
+export interface EventEmitterInterface {
+  /**
+   * Register an event listener
+   * @param event The event name to listen for
+   * @param callback The callback function to execute when the event occurs
+   * @returns A function to remove the listener
+   */
+  on(event: string, callback: (data: any) => void): () => void;
+
+  /**
+   * Emit an event with data
+   * @param event The event name to emit
+   * @param data The data to pass to listeners
+   */
+  emit(event: string, data: any): void;
+
+  /**
+   * Remove all listeners for an event
+   * @param event The event name to clear listeners for
+   */
+  removeAllListeners(event?: string): void;
+}
+
 export const ANNOTATION_CONSTANTS = {
   CONTEXT_LENGTH: 32,
 } as const;

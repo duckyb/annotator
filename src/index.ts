@@ -1,9 +1,12 @@
 // Main library exports
 export * from './types';
+export { Annotator } from './annotator';
+export { EventEmitter } from './event-emitter';
 
 // Highlighter exports
 export * from './highlighter/types';
 export * from './highlighter/highlightRange';
+export * from './highlighter/highlightRangeWrapper';
 export * from './highlighter/drawHighlightsAbovePdfCanvas';
 export * from './highlighter/getBoundingClientRect';
 export * from './highlighter/getHighlightsContainingNode';
