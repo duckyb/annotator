@@ -2,11 +2,9 @@ import type { HighlightElement } from './highlighter';
 
 /**
  * Document context for anchoring annotations
+ * Can be any object or string that can be used to identify a document context
  */
-export interface DocumentContext {
-  transcriptionId: string;
-  nodeId?: string;
-}
+export type DocumentContext = Record<string, unknown> | string;
 
 /** Custom type for h2iosc annotations */
 export interface Annotation {

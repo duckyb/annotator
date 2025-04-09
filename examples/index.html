@@ -124,8 +124,16 @@ Select some text and click "Create Annotation" to see the output here.</pre
       // Create an instance of the Annotator class
       const annotator = new Annotator();
       
-      // Set a mock document context
+      // Set a mock document context - can be a string
       annotator.setContext('example-transcription-id');
+      
+      // Alternatively, context can be an object with any properties
+      // Example with an object context:
+      // annotator.setContext({
+      //   transcriptionId: 'example-transcription-id',
+      //   nodeId: 'page-1',
+      //   customProperty: 'custom-value'
+      // });
 
       // Basic highlighting example
       function basicHighlighting() {

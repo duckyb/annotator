@@ -60,11 +60,10 @@ export class Annotator {
 
   /**
    * Set the document context for anchoring.
-   * @param transcriptionId The ID of the variant
-   * @param nodeId The ID of the document page (optional)
+   * @param context The document context, can be any object or string
    */
-  setContext(transcriptionId: string, nodeId?: string): void {
-    this.currentContext = { transcriptionId, nodeId };
+  setContext(context: DocumentContext): void {
+    this.currentContext = context;
   }
 
   /**
@@ -372,24 +371,35 @@ export class Annotator {
   }
 
   /**
-   * Determine if an annotation should be processed based on the current context
+   * Check if an annotation should be processed in the current context
    * @param annotation The annotation to check
-   * @returns True if the annotation should be processed
+   * @returns True if the annotation should be processed, false otherwise
    */
   private shouldProcessAnnotation(annotation: Annotation): boolean {
     if (!this.currentContext) {
-      return true; // If no context is set, process all annotations
-    }
-    // First check if the annotation belongs to the current transcription
-    if (annotation.transcriptionId !== this.currentContext.transcriptionId) {
       return false;
     }
-    // If nodeId is specified in the context, check if the annotation belongs to this page
-    if (this.currentContext.nodeId && annotation.nodeId) {
-      return annotation.nodeId === this.currentContext.nodeId;
+
+    // If context is a string, compare with transcriptionId
+    if (typeof this.currentContext === 'string') {
+      return annotation.transcriptionId === this.currentContext;
     }
-    // If we have a context nodeId but annotation doesn't, or vice versa, still allow it
-    // This handles cases where some annotations might not have page information
-    return true;
+    
+    // If context is an object with transcriptionId property
+    const contextObj = this.currentContext as Record<string, unknown>;
+    if (typeof contextObj.transcriptionId === 'string') {
+      return (
+        annotation.transcriptionId === contextObj.transcriptionId &&
+        (!annotation.nodeId ||
+          !contextObj.nodeId ||
+          annotation.nodeId === contextObj.nodeId)
+      );
+    }
+    
+    // For other context objects, use JSON.stringify for comparison
+    return JSON.stringify(this.currentContext) === JSON.stringify({
+      transcriptionId: annotation.transcriptionId,
+      nodeId: annotation.nodeId
+    });
   }
 }
