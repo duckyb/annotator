@@ -1,19 +1,21 @@
+import { ResolvedTextPosition } from './text-range-types';
+
 /**
  * Resolve one or more character offsets within an element to (text node, position)
  * pairs.
  *
  * @param {Element} element
  * @param {number[]} offsets - Offsets, which must be sorted in ascending order
- * @return {{ node: Text, offset: number }[]}
+ * @return {ResolvedTextPosition[]}
  */
-export function resolveOffsets(element: HTMLElement, ...offsets: number[]) {
+export function resolveOffsets(element: HTMLElement, ...offsets: number[]): ResolvedTextPosition[] {
   let nextOffset = offsets.shift();
   const nodeIter =
     /** @type {Document} */ element.ownerDocument.createNodeIterator(
       element,
       NodeFilter.SHOW_TEXT
     );
-  const results = [];
+  const results: ResolvedTextPosition[] = [];
 
   let currentNode = nodeIter.nextNode();
   let textNode;
@@ -24,7 +26,7 @@ export function resolveOffsets(element: HTMLElement, ...offsets: number[]) {
   while (nextOffset !== undefined && currentNode) {
     textNode = /** @type {Text} */ currentNode;
     if (length + (textNode as Text).data.length > nextOffset) {
-      results.push({ node: textNode, offset: nextOffset - length });
+      results.push({ node: textNode as Text, offset: nextOffset - length });
       nextOffset = offsets.shift();
     } else {
       currentNode = nodeIter.nextNode();
@@ -34,7 +36,7 @@ export function resolveOffsets(element: HTMLElement, ...offsets: number[]) {
 
   // Boundary case.
   while (nextOffset !== undefined && textNode && length === nextOffset) {
-    results.push({ node: textNode, offset: (textNode as Text).data.length });
+    results.push({ node: textNode as Text, offset: (textNode as Text).data.length });
     nextOffset = offsets.shift();
   }
 

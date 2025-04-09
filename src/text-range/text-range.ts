@@ -1,4 +1,5 @@
-import { resolveOffsets, TextPosition } from '.';
+import { resolveOffsets } from './resolveOffsets';
+import { TextPosition } from './text-position';
 /**
  * Represents a region of a document as a (start, end) pair of `TextPosition` points.
  *

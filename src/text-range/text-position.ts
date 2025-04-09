@@ -1,4 +1,6 @@
-import { nodeTextLength, previousSiblingsTextLength, resolveOffsets } from '.';
+import { nodeTextLength } from './nodeTextLength';
+import { previousSiblingsTextLength } from './previousSiblingsTextLength';
+import { resolveOffsets } from './resolveOffsets';
 
 /**
  * Represents an offset within the text content of an element.
@@ -62,7 +64,7 @@ export class TextPosition {
    * the element has no text. Offsets at the boundary between two nodes are
    * resolved to the start of the node that begins at the boundary.
    *
-   * @return {{ node: Text, offset: number }}
+   * @return {import('./text-range-types').ResolvedTextPosition}
    * @throws {RangeError}
    */
   resolve() {

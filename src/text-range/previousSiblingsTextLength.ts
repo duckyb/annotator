@@ -1,4 +1,4 @@
-import { nodeTextLength } from '.';
+import { nodeTextLength } from './nodeTextLength';
 
 /**
  * Return the total length of the text of all previous siblings of `node`.

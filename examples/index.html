@@ -1,221 +1,226 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Annotator Library Demo</title>
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-      line-height: 1.6;
-      color: #333;
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-    
-    .button-container {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-    
-    button {
-      padding: 8px 16px;
-      background-color: #4a90e2;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-    
-    button:hover {
-      background-color: #3a80d2;
-    }
-    
-    #content {
-      padding: 20px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      margin-bottom: 20px;
-    }
-    
-    .highlight {
-      background-color: rgba(255, 255, 0, 0.3);
-    }
-    
-    .custom-highlight {
-      background-color: rgba(255, 165, 0, 0.3);
-      border-bottom: 1px dashed orange;
-    }
-    
-    .quote-highlight {
-      background-color: rgba(144, 238, 144, 0.3);
-      border-bottom: 1px dashed green;
-    }
-    
-    .position-highlight {
-      background-color: rgba(173, 216, 230, 0.3);
-      border-bottom: 1px dashed blue;
-    }
-    
-    .range-highlight {
-      background-color: rgba(221, 160, 221, 0.3);
-      border-bottom: 1px dashed purple;
-    }
-    
-    pre {
-      background-color: #f5f5f5;
-      padding: 15px;
-      border-radius: 4px;
-      overflow: auto;
-    }
-  </style>
-</head>
-<body>
-  <h1>Annotator Library Demo</h1>
-  
-  <div id="content">
-    <h2>Sample Text for Annotation</h2>
-    <p>Four score and seven years ago our fathers brought forth on this continent, a new nation, conceived in Liberty, and dedicated to the proposition that all men are created equal.</p>
-    <p>Now we are engaged in a great civil war, testing whether that nation, or any nation so conceived and so dedicated, can long endure. We are met on a great battle-field of that war. We have come to dedicate a portion of that field, as a final resting place for those who here gave their lives that that nation might live. It is altogether fitting and proper that we should do this.</p>
-    <p>But, in a larger sense, we can not dedicate -- we can not consecrate -- we can not hallow -- this ground. The brave men, living and dead, who struggled here, have consecrated it, far above our poor power to add or detract. The world will little note, nor long remember what we say here, but it can never forget what they did here. It is for us the living, rather, to be dedicated here to the unfinished work which they who fought here have thus far so nobly advanced.</p>
-  </div>
-  
-  <div class="button-container">
-    <button id="highlight-btn">Basic Highlighting</button>
-    <button id="annotation-btn">Create Annotation</button>
-    <button id="clear-btn">Clear Annotations</button>
-  </div>
-  
-  <div id="output">
-    <h3>Annotation Output</h3>
-    <pre id="annotation-output">Select some text and click "Create Annotation" to see the output here.</pre>
-  </div>
-  
-  <script type="module">
-    // Import from your bundled library
-    // In a real application, you would import from the package
-    // import { ... } from '@h2iosc/annotator';
-    
-    // For this demo, we'll simulate the imports
-    // This would be replaced with actual imports in a real application
-    const mockLibrary = {
-      highlightRange: (range, tag = 'span', cssClass = 'highlight') => {
-        const highlights = [];
-        if (range && !range.collapsed) {
-          const fragment = range.cloneContents();
-          const wrapper = document.createElement(tag);
-          wrapper.className = cssClass;
-          wrapper.appendChild(fragment);
-          range.deleteContents();
-          range.insertNode(wrapper);
-          highlights.push(wrapper);
-        }
-        return highlights;
-      },
-      
-      removeHighlights: (highlights) => {
-        highlights.forEach(highlight => {
-          const parent = highlight.parentNode;
-          if (parent) {
-            // Move all children out of the highlight
-            while (highlight.firstChild) {
-              parent.insertBefore(highlight.firstChild, highlight);
-            }
-            // Remove the empty highlight
-            parent.removeChild(highlight);
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Annotator Library Demo</title>
+    <style>
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+          Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      .button-container {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      button {
+        padding: 8px 16px;
+        background-color: #4a90e2;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+
+      button:hover {
+        background-color: #3a80d2;
+      }
+
+      #content {
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        margin-bottom: 20px;
+      }
+
+      .highlight {
+        background-color: rgba(255, 255, 0, 0.3);
+      }
+
+      .custom-highlight {
+        background-color: rgba(255, 165, 0, 0.3);
+        border-bottom: 1px dashed orange;
+      }
+
+      .quote-highlight {
+        background-color: rgba(144, 238, 144, 0.3);
+        border-bottom: 1px dashed green;
+      }
+
+      .position-highlight {
+        background-color: rgba(173, 216, 230, 0.3);
+        border-bottom: 1px dashed blue;
+      }
+
+      .range-highlight {
+        background-color: rgba(221, 160, 221, 0.3);
+        border-bottom: 1px dashed purple;
+      }
+
+      pre {
+        background-color: #f5f5f5;
+        padding: 15px;
+        border-radius: 4px;
+        overflow: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Annotator Library Demo</h1>
+
+    <div id="content">
+      <h2>Sample Text for Annotation</h2>
+      <p>
+        Four score and seven years ago our fathers brought forth on this
+        continent, a new nation, conceived in Liberty, and dedicated to the
+        proposition that all men are created equal.
+      </p>
+      <p>
+        Now we are engaged in a great civil war, testing whether that nation, or
+        any nation so conceived and so dedicated, can long endure. We are met on
+        a great battle-field of that war. We have come to dedicate a portion of
+        that field, as a final resting place for those who here gave their lives
+        that that nation might live. It is altogether fitting and proper that we
+        should do this.
+      </p>
+      <p>
+        But, in a larger sense, we can not dedicate -- we can not consecrate --
+        we can not hallow -- this ground. The brave men, living and dead, who
+        struggled here, have consecrated it, far above our poor power to add or
+        detract. The world will little note, nor long remember what we say here,
+        but it can never forget what they did here. It is for us the living,
+        rather, to be dedicated here to the unfinished work which they who
+        fought here have thus far so nobly advanced.
+      </p>
+    </div>
+
+    <div class="button-container">
+      <button id="highlight-btn">Basic Highlighting</button>
+      <button id="annotation-btn">Create Annotation</button>
+      <button id="clear-btn">Clear Annotations</button>
+    </div>
+
+    <div id="output">
+      <h3>Annotation Output</h3>
+      <pre id="annotation-output">
+Select some text and click "Create Annotation" to see the output here.</pre
+      >
+    </div>
+
+    <script type="module">
+      // Import from your bundled library
+      import { highlightRange, removeHighlights } from '../dist/index.esm.js';
+
+      // Create a library object to maintain compatibility with the existing code
+      const library = {
+        highlightRange,
+        removeHighlights,
+      };
+
+      // Basic highlighting example
+      function basicHighlighting() {
+        const contentElement = document.getElementById('content');
+        const selection = window.getSelection();
+
+        if (selection.rangeCount > 0) {
+          const range = selection.getRangeAt(0);
+          if (!range.collapsed) {
+            // Apply highlighting
+            const highlights = library.highlightRange(
+              range,
+              'span',
+              'custom-highlight'
+            );
+
+            // Store the highlights for later removal
+            window.currentHighlights = window.currentHighlights || [];
+            window.currentHighlights.push(...highlights);
+          } else {
+            alert('Please select some text first');
           }
-        });
-      }
-    };
-    
-    // Basic highlighting example
-    function basicHighlighting() {
-      const contentElement = document.getElementById('content');
-      const selection = window.getSelection();
-      
-      if (selection.rangeCount > 0) {
-        const range = selection.getRangeAt(0);
-        if (!range.collapsed) {
-          // Apply highlighting
-          const highlights = mockLibrary.highlightRange(range, 'span', 'custom-highlight');
-          
-          // Store the highlights for later removal
-          window.currentHighlights = window.currentHighlights || [];
-          window.currentHighlights.push(...highlights);
         } else {
           alert('Please select some text first');
         }
-      } else {
-        alert('Please select some text first');
       }
-    }
-    
-    // Create annotation example
-    function createAnnotation() {
-      const contentElement = document.getElementById('content');
-      const selection = window.getSelection();
-      
-      if (selection.rangeCount > 0) {
-        const range = selection.getRangeAt(0);
-        if (!range.collapsed) {
-          // Apply highlighting
-          const highlights = mockLibrary.highlightRange(range, 'span', 'quote-highlight');
-          
-          // Store the highlights for later removal
-          window.currentHighlights = window.currentHighlights || [];
-          window.currentHighlights.push(...highlights);
-          
-          // Create a mock annotation
-          const annotation = {
-            id: 'anno-' + Math.random().toString(36).substring(2, 9),
-            text: range.toString(),
-            startContainer: range.startContainer.textContent,
-            startOffset: range.startOffset,
-            endContainer: range.endContainer.textContent,
-            endOffset: range.endOffset,
-            created: new Date().toISOString()
-          };
-          
-          // Display the annotation
-          document.getElementById('annotation-output').textContent = 
-            JSON.stringify(annotation, null, 2);
+
+      // Create annotation example
+      function createAnnotation() {
+        const contentElement = document.getElementById('content');
+        const selection = window.getSelection();
+
+        if (selection.rangeCount > 0) {
+          const range = selection.getRangeAt(0);
+          if (!range.collapsed) {
+            // Apply highlighting
+            const highlights = library.highlightRange(
+              range,
+              'span',
+              'quote-highlight'
+            );
+
+            // Store the highlights for later removal
+            window.currentHighlights = window.currentHighlights || [];
+            window.currentHighlights.push(...highlights);
+
+            // Create a mock annotation
+            const annotation = {
+              id: 'anno-' + Math.random().toString(36).substring(2, 9),
+              text: range.toString(),
+              startContainer: range.startContainer.textContent,
+              startOffset: range.startOffset,
+              endContainer: range.endContainer.textContent,
+              endOffset: range.endOffset,
+              created: new Date().toISOString(),
+            };
+
+            // Display the annotation
+            document.getElementById('annotation-output').textContent =
+              JSON.stringify(annotation, null, 2);
+          } else {
+            alert('Please select some text first');
+          }
         } else {
           alert('Please select some text first');
         }
-      } else {
-        alert('Please select some text first');
       }
-    }
-    
-    // Function to clear all annotations
-    function clearAnnotations() {
-      if (window.currentHighlights && window.currentHighlights.length > 0) {
-        mockLibrary.removeHighlights(window.currentHighlights);
+
+      // Function to clear all annotations
+      function clearAnnotations() {
+        if (window.currentHighlights && window.currentHighlights.length > 0) {
+          library.removeHighlights(window.currentHighlights);
+          window.currentHighlights = [];
+          document.getElementById('annotation-output').textContent =
+            'Select some text and click "Create Annotation" to see the output here.';
+        } else {
+          alert('No annotations to clear');
+        }
+      }
+
+      // Add event listeners to buttons
+      window.addEventListener('DOMContentLoaded', () => {
+        // Get the buttons
+        const highlightButton = document.getElementById('highlight-btn');
+        const annotationButton = document.getElementById('annotation-btn');
+        const clearButton = document.getElementById('clear-btn');
+
+        // Initialize the highlights array
         window.currentHighlights = [];
-        document.getElementById('annotation-output').textContent = 'Select some text and click "Create Annotation" to see the output here.';
-      } else {
-        alert('No annotations to clear');
-      }
-    }
-    
-    // Add event listeners to buttons
-    window.addEventListener('DOMContentLoaded', () => {
-      // Get the buttons
-      const highlightButton = document.getElementById('highlight-btn');
-      const annotationButton = document.getElementById('annotation-btn');
-      const clearButton = document.getElementById('clear-btn');
-      
-      // Initialize the highlights array
-      window.currentHighlights = [];
-      
-      // Add event listeners
-      highlightButton.addEventListener('click', basicHighlighting);
-      annotationButton.addEventListener('click', createAnnotation);
-      clearButton.addEventListener('click', clearAnnotations);
-    });
-  </script>
-</body>
+
+        // Add event listeners
+        highlightButton.addEventListener('click', basicHighlighting);
+        annotationButton.addEventListener('click', createAnnotation);
+        clearButton.addEventListener('click', clearAnnotations);
+      });
+    </script>
+  </body>
 </html>
