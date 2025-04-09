@@ -86,6 +86,7 @@
   <div class="button-container">
     <button id="highlight-btn">Basic Highlighting</button>
     <button id="annotation-btn">Create Annotation</button>
+    <button id="clear-btn">Clear Annotations</button>
   </div>
   
   <div id="output">
@@ -141,10 +142,9 @@
           // Apply highlighting
           const highlights = mockLibrary.highlightRange(range, 'span', 'custom-highlight');
           
-          // Remove the highlights after 3 seconds
-          setTimeout(() => {
-            mockLibrary.removeHighlights(highlights);
-          }, 3000);
+          // Store the highlights for later removal
+          window.currentHighlights = window.currentHighlights || [];
+          window.currentHighlights.push(...highlights);
         } else {
           alert('Please select some text first');
         }
@@ -164,6 +164,10 @@
           // Apply highlighting
           const highlights = mockLibrary.highlightRange(range, 'span', 'quote-highlight');
           
+          // Store the highlights for later removal
+          window.currentHighlights = window.currentHighlights || [];
+          window.currentHighlights.push(...highlights);
+          
           // Create a mock annotation
           const annotation = {
             id: 'anno-' + Math.random().toString(36).substring(2, 9),
@@ -178,11 +182,6 @@
           // Display the annotation
           document.getElementById('annotation-output').textContent = 
             JSON.stringify(annotation, null, 2);
-          
-          // Remove the highlights after 5 seconds
-          setTimeout(() => {
-            mockLibrary.removeHighlights(highlights);
-          }, 5000);
         } else {
           alert('Please select some text first');
         }
@@ -191,15 +190,31 @@
       }
     }
     
+    // Function to clear all annotations
+    function clearAnnotations() {
+      if (window.currentHighlights && window.currentHighlights.length > 0) {
+        mockLibrary.removeHighlights(window.currentHighlights);
+        window.currentHighlights = [];
+        document.getElementById('annotation-output').textContent = 'Select some text and click "Create Annotation" to see the output here.';
+      } else {
+        alert('No annotations to clear');
+      }
+    }
+    
     // Add event listeners to buttons
     window.addEventListener('DOMContentLoaded', () => {
       // Get the buttons
       const highlightButton = document.getElementById('highlight-btn');
       const annotationButton = document.getElementById('annotation-btn');
+      const clearButton = document.getElementById('clear-btn');
+      
+      // Initialize the highlights array
+      window.currentHighlights = [];
       
       // Add event listeners
       highlightButton.addEventListener('click', basicHighlighting);
       annotationButton.addEventListener('click', createAnnotation);
+      clearButton.addEventListener('click', clearAnnotations);
     });
   </script>
 </body>

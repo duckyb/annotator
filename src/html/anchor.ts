@@ -1,5 +1,5 @@
 import { RangeAnchor, TextPositionAnchor, TextQuoteAnchor } from '../anchors';
-import {
+import type {
   QuerySelectorOptions,
   SelectorWithType,
   TextPositionSelectorWithType,

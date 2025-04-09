@@ -1,4 +1,4 @@
-import { QuerySelectorOptions, TextQuoteSelectorWithType } from '../types';
+import type { QuerySelectorOptions, TextQuoteSelectorWithType } from '../types';
 import { TextPositionAnchor } from './text-position-anchor';
 
 // The DiffMatchPatch bitap has a hard 32-character pattern length limit.

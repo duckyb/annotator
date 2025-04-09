@@ -1,4 +1,4 @@
-import { RangeSelector } from '../types';
+import type { RangeSelector } from '../types';
 import { getTextNodes } from '../xpath-util';
 // import helpers from '../helpers';
 import { nodeFromXPath } from '../xpath';

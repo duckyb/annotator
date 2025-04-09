@@ -1,5 +1,5 @@
 import { AnchorEvent } from '../types';
-import { HighlightElement } from './index';
+import type { HighlightElement } from './index';
 
 /**
  * Simple event emitter to replace RxJS Subject

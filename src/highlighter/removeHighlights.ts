@@ -1,4 +1,4 @@
-import { HighlightElement } from '.';
+import type { HighlightElement } from '.';
 import { replaceWith } from './replaceWith';
 
 /**

@@ -1,5 +1,5 @@
-import { TextProcessor } from '../text-range/text-processor';
-import { Annotation } from '../types';
+import type { TextProcessor } from '../text-range/text-processor';
+import type { Annotation } from '../types';
 import { RangeAnchor } from './range-anchor';
 import { TextPositionAnchor } from './text-position-anchor';
 import { TextQuoteAnchor } from './text-quote-anchor';

@@ -1,4 +1,4 @@
-import { HighlightElement } from './types';
+import type { HighlightElement } from './types';
 import { drawHighlightsAbovePdfCanvas } from './drawHighlightsAbovePdfCanvas';
 import { wholeTextNodesInRange } from './wholeTextNodesInRange';
 

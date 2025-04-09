@@ -1,4 +1,4 @@
-import { HighlightElement } from '.';
+import type { HighlightElement } from '.';
 
 /**
  * Set whether the given highlight elements should appear "focused".

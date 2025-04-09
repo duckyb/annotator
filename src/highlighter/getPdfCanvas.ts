@@ -1,4 +1,4 @@
-import { HighlightElement } from '.';
+import type { HighlightElement } from '.';
 
 /**
  * Return the canvas element underneath a highlight element in a PDF page's

@@ -1,4 +1,4 @@
-import { BrowserNormalizedRange } from '../types';
+import type { BrowserNormalizedRange } from '../types';
 import { getTextNodes, xpathFromNode } from '../xpath-util';
 import helpers from '../helpers';
 

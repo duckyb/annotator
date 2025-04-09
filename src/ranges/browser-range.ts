@@ -1,4 +1,4 @@
-import { BrowserNormalizedRange } from '../types';
+import type { BrowserNormalizedRange } from '../types';
 import { getFirstTextNodeNotBefore, getLastTextNodeUpTo } from '../xpath-util';
 
 /**

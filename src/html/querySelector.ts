@@ -1,4 +1,4 @@
-import { Anchor, QuerySelectorOptions } from '../types';
+import type { Anchor, QuerySelectorOptions } from '../types';
 
 export async function querySelector(
   handler: Anchor,

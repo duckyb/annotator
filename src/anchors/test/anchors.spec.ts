@@ -1,4 +1,4 @@
-import { NormalizedRange } from '../../ranges';
+import type { NormalizedRange } from '../../ranges';
 import { RangeAnchor, TextPositionAnchor, TextQuoteAnchor } from '../index';
 
 // These are primarily basic API tests for the anchoring classes. Tests for

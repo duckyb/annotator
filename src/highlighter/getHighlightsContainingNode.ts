@@ -1,4 +1,4 @@
-import { HighlightElement } from '.';
+import type { HighlightElement } from '.';
 
 /**
  * Get the highlight elements that contain the given node.

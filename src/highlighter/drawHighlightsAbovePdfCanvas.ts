@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { HighlightElement } from '.';
+import type { HighlightElement } from '.';
 import { getPdfCanvas } from './getPdfCanvas';
 import { isCSSPropertySupported } from './isCSSPropertySupported';
 

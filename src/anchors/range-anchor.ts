@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { BrowserRange, NormalizedRange, SerializedRange } from '../ranges';
-import { RangeSelector, RangeSelectorWithType } from '../types';
+import type { RangeSelector, RangeSelectorWithType } from '../types';
 
 interface RangeSelectorWithAttributes extends RangeSelectorWithType {
   startContainerPageXPath?: string;

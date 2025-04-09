@@ -1,4 +1,4 @@
-import { HighlightElement } from './highlighter';
+import type { HighlightElement } from './highlighter';
 
 /**
  * Document context for anchoring annotations

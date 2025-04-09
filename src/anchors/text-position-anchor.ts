@@ -1,4 +1,4 @@
-import { TextPositionSelectorWithType } from '../types';
+import type { TextPositionSelectorWithType } from '../types';
 
 export class TextPositionAnchor {
   /**

@@ -1,4 +1,4 @@
-import { HighlightElement } from '.';
+import type { HighlightElement } from '.';
 import { removeHighlights } from './removeHighlights';
 
 /**
