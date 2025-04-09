@@ -10,7 +10,7 @@ export function nodeTextLength(node: Node) {
       // nb. `textContent` excludes text in comments and processing instructions
       // when called on a parent element, so we don't need to subtract that here.
 
-      return /** @type {string} */ node.textContent.length;
+      return (node.textContent || '').length;
     default:
       return 0;
   }

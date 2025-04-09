@@ -1,0 +1,14 @@
+yarn.lock
+.prettierignore
+node_modules
+.angular
+.idea
+.vscode
+*.xlf
+*.ico
+src/scripts/mirador/*
+.gitignore
+.browserslistrc
+bun.lockb
+.tsconfig.worker.json
+src/app/text-note/ui/components/text-note-editor/tinymce/locales/*

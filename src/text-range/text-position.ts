@@ -36,7 +36,7 @@ export class TextPosition {
    * @param {Element} parent - Ancestor of `this.element`
    * @return {TextPosition}
    */
-  relativeTo(parent) {
+  relativeTo(parent: HTMLElement) {
     if (!parent.contains(this.element)) {
       throw new Error('Parent is not an ancestor of current element');
     }
@@ -45,7 +45,11 @@ export class TextPosition {
     let { offset } = this;
     while (el !== parent) {
       offset += previousSiblingsTextLength(el);
-      el = /** @type {Element} */ el.parentElement;
+      const parentEl = el.parentElement;
+      if (!parentEl) {
+        throw new Error('Element has no parent');
+      }
+      el = parentEl;
     }
 
     return new TextPosition(el, offset);
@@ -72,10 +76,10 @@ export class TextPosition {
    * @param {number} offset
    * @return {TextPosition}
    */
-  static fromPoint(node, offset) {
+  static fromPoint(node: Node, offset: number) {
     switch (node.nodeType) {
       case Node.TEXT_NODE: {
-        if (offset < 0 || offset > /** @type {Text} */ node.data.length) {
+        if (offset < 0 || offset > (node as Text).data.length) {
           throw new Error('Text node offset is out of range');
         }
 
@@ -99,7 +103,7 @@ export class TextPosition {
           textOffset += nodeTextLength(node.childNodes[i]);
         }
 
-        return new TextPosition(/** @type {Element} */ node, textOffset);
+        return new TextPosition(node as HTMLElement, textOffset);
       }
       default:
         throw new Error('Point is not in an element or text node');

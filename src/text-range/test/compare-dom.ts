@@ -18,12 +18,12 @@ function elide(text: string, length: number) {
  *
  * @param {Node} node
  */
-export function nodeToString(node) {
+export function nodeToString(node: Node): string {
   switch (node.nodeType) {
     case Node.TEXT_NODE:
-      return `[Text: ${elide(node.data, 100)}]`;
+      return `[Text: ${elide((node as Text).data, 100)}]`;
     case Node.ELEMENT_NODE:
-      return `[${node.localName} element: ${elide(node.innerHTML, 400)}]`;
+      return `[${(node as Element).localName} element: ${elide((node as Element).innerHTML, 400)}]`;
     case Node.DOCUMENT_NODE:
       return '[Document]';
     case Node.CDATA_SECTION_NODE:
@@ -39,7 +39,7 @@ export function nodeToString(node) {
  * This produces more readable output than using `assert.equal(actual, expected)`
  * if there is a mismatch.
  */
-export function assertNodesEqual(actual, expected) {
+export function assertNodesEqual(actual: Node, expected: Node) {
   if (actual !== expected) {
     return {
       pass: false,

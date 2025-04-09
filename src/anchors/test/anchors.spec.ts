@@ -5,7 +5,7 @@ import { RangeAnchor, TextPositionAnchor, TextQuoteAnchor } from '../index';
 // anchoring a variety of HTML and PDF content exist in `html-test` and
 // `pdf-test`.
 describe('annotator/anchoring/types', () => {
-  let container;
+  let container: HTMLDivElement;
 
   beforeEach(() => {
     container = document.createElement('div');
@@ -22,8 +22,8 @@ describe('annotator/anchoring/types', () => {
   });
 
   describe('RangeAnchor', () => {
-    let fakeSerialize;
-    let fakeToRange;
+    let fakeSerialize: () => { startContainer: string; startOffset: number; endContainer: string; endOffset: number };
+    let fakeToRange: () => string;
 
     beforeEach(() => {
       fakeSerialize = () => ({
@@ -36,12 +36,18 @@ describe('annotator/anchoring/types', () => {
       spyOn(RangeAnchor, 'sniff').and.returnValue({
         serialize: fakeSerialize,
         toRange: fakeToRange,
-      } as NormalizedRange);
+        commonAncestor: document.createElement('div'),
+        startContainer: document.createElement('div'),
+        endContainer: document.createElement('div'),
+        limit: document.createElement('div'),
+        text: 'sample text',
+        textNodes: [document.createTextNode('sample text')]
+      } as unknown as NormalizedRange);
     });
 
     afterEach(() => {
-      fakeSerialize = null;
-      fakeToRange = null;
+      fakeSerialize = (() => ({ startContainer: '', startOffset: 0, endContainer: '', endOffset: 0 })) as any;
+      fakeToRange = (() => '') as any;
     });
 
     describe('#fromRange', () => {
@@ -117,6 +123,7 @@ describe('annotator/anchoring/types', () => {
     describe('#fromSelector', () => {
       it('returns a TextPositionAnchor instance', () => {
         const anchor = TextPositionAnchor.fromSelector(container, {
+          type: 'TextPositionSelector',
           start: 0,
           end: 0,
         });
@@ -146,17 +153,20 @@ describe('annotator/anchoring/types', () => {
     describe('integration tests', () => {
       it('can convert a Range to TextPositionSelector and back to a Range', () => {
         const range = document.createRange();
-        range.setStart(container.firstChild, 0);
-        range.setEnd(container.firstChild, 4);
-        const anchor = TextPositionAnchor.fromRange(container, range);
-        expect(anchor.toSelector()).toEqual({
-          type: 'TextPositionSelector',
-          start: 0,
-          end: 4,
-        });
-        const newRange = anchor.toRange();
-        expect(newRange).toEqual(range);
-        expect(newRange.toString()).toEqual('Four');
+        const firstChild = container.firstChild;
+        if (firstChild) {
+          range.setStart(firstChild, 0);
+          range.setEnd(firstChild, 4);
+          const anchor = TextPositionAnchor.fromRange(container, range);
+          expect(anchor.toSelector()).toEqual({
+            type: 'TextPositionSelector',
+            start: 0,
+            end: 4,
+          });
+          const newRange = anchor.toRange();
+          expect(newRange).toEqual(range);
+          expect(newRange.toString()).toEqual('Four');
+        }
       });
     });
   });
@@ -184,6 +194,7 @@ describe('annotator/anchoring/types', () => {
     describe('#fromSelector', () => {
       it('returns a TextQuoteAnchor instance', () => {
         const anchor = TextQuoteAnchor.fromSelector(container, {
+          type: 'TextQuoteSelector',
           exact: 'Liberty',
           prefix: 'a new nation, conceived in ',
           suffix: ', and dedicated to the proposition that',
@@ -244,17 +255,20 @@ describe('annotator/anchoring/types', () => {
     describe('integration tests', () => {
       it('can convert a Range to TextQuoteSelector and back to a Range', () => {
         const range = document.createRange();
-        range.setStart(container.firstChild, 0);
-        range.setEnd(container.firstChild, 4);
-        const anchor = TextQuoteAnchor.fromRange(container, range);
-        expect(anchor.toSelector()).toEqual({
-          type: 'TextQuoteSelector',
-          prefix: '',
-          suffix: ' score and seven years ago our f',
-          exact: 'Four',
-        });
-        const newRange = anchor.toRange();
-        expect(newRange.toString()).toEqual('Four');
+        const firstChild = container.firstChild;
+        if (firstChild) {
+          range.setStart(firstChild, 0);
+          range.setEnd(firstChild, 4);
+          const anchor = TextQuoteAnchor.fromRange(container, range);
+          expect(anchor.toSelector()).toEqual({
+            type: 'TextQuoteSelector',
+            prefix: '',
+            suffix: ' score and seven years ago our f',
+            exact: 'Four',
+          });
+          const newRange = anchor.toRange();
+          expect(newRange.toString()).toEqual('Four');
+        }
       });
     });
   });

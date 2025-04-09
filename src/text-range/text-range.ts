@@ -63,7 +63,7 @@ export class TextRange {
    * @param {Range} range
    * @return {TextRange}
    */
-  static fromRange(range) {
+  static fromRange(range: Range) {
     const start = TextPosition.fromPoint(
       range.startContainer,
       range.startOffset

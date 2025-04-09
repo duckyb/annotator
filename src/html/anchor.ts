@@ -5,8 +5,6 @@ import type {
   TextPositionSelectorWithType,
   TextQuoteSelectorWithType,
   RangeSelectorWithType,
-  TextQuoteSelector,
-  TextPositionSelector,
   RangeSelector,
 } from '../types';
 import { querySelector } from './querySelector';
@@ -92,7 +90,11 @@ export async function anchor(
     promise = promise.catch(() => {
       const selectedAnchor = TextPositionAnchor.fromSelector(
         root as HTMLElement,
-        textPositionSelector as TextPositionSelector
+        {
+          type: 'TextPositionSelector',
+          start: textPositionSelector?.start ?? 0,
+          end: textPositionSelector?.end ?? 0
+        }
       );
       return querySelector(selectedAnchor, options)
         .then(maybeAssertQuote)
@@ -109,7 +111,12 @@ export async function anchor(
     promise = promise.catch(() => {
       const selectedAnchor = TextQuoteAnchor.fromSelector(
         root as HTMLElement,
-        textQuoteSelector as TextQuoteSelector
+        {
+          type: 'TextQuoteSelector',
+          exact: textQuoteSelector?.exact ?? '',
+          prefix: textQuoteSelector?.prefix,
+          suffix: textQuoteSelector?.suffix
+        }
       );
       return querySelector(selectedAnchor, options).then((range) =>
         Promise.resolve({

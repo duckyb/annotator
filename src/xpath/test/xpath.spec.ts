@@ -2,7 +2,7 @@ import { nodeFromXPath } from '../index';
 
 describe('annotator/anchoring/xpath', () => {
   describe('nodeFromXPath', () => {
-    let container;
+    let container: HTMLDivElement;
     const html = `
         <h1 id="h1-1">text</h1>
         <p id="p-1">text<br/><br/><a id="a-1">text</a></p>

@@ -19,26 +19,26 @@ const html = `
  * @param {Node} node
  * @return {Text[]}
  */
-function textNodes(node) {
-  const nodes = [];
+function textNodes(node: Node): Text[] {
+  const nodes: Text[] = [];
   const iter = document.createNodeIterator(node, NodeFilter.SHOW_TEXT);
-  let current;
+  let current: Node | null;
   while ((current = iter.nextNode())) {
-    nodes.push(current);
+    nodes.push(current as Text);
   }
   return nodes;
 }
 
 describe('annotator/anchoring/text-range', () => {
   describe('TextPosition', () => {
-    let container;
+    let container: HTMLDivElement;
     beforeEach(() => {
       container = document.createElement('div');
       container.innerHTML = html;
 
       jasmine.addMatchers({
         assertNodesEqual: () => ({
-          compare: (actual, expect) => assertNodesEqual(actual, expect),
+          compare: (actual: Node, expect: Node) => assertNodesEqual(actual, expect),
         }),
       });
     });
@@ -66,19 +66,26 @@ describe('annotator/anchoring/text-range', () => {
       });
 
       it('resolves text position in middle of element to correct node and offset', () => {
+        const containerText = container.textContent || '';
         const pos = new TextPosition(
           container,
-          container.textContent.indexOf('is a')
+          containerText.indexOf('is a')
         );
 
         const { node, offset } = pos.resolve();
 
-        assertNodesEqual(node, container.querySelector('p').firstChild);
+        const pElement = container.querySelector('p');
+        if (!pElement || !pElement.firstChild) {
+          fail('p element or its firstChild not found');
+          return;
+        }
+        assertNodesEqual(node, pElement.firstChild);
         expect(offset).toEqual('This '.length);
       });
 
       it('resolves text position at end of element to correct node and offset', () => {
-        const pos = new TextPosition(container, container.textContent.length);
+        const containerText = container.textContent || '';
+        const pos = new TextPosition(container, containerText.length);
 
         const { node, offset } = pos.resolve();
 
@@ -102,9 +109,10 @@ describe('annotator/anchoring/text-range', () => {
       });
 
       it('throws if offset exceeds current text content length', () => {
+        const containerText = container.textContent || '';
         const pos = new TextPosition(
           container,
-          container.textContent.length + 1
+          containerText.length + 1
         );
 
         expect(() => {
@@ -117,7 +125,12 @@ describe('annotator/anchoring/text-range', () => {
       it("throws an error if argument is not an ancestor of position's element", () => {
         const el = document.createElement('div');
         el.append('One');
-        const pos = TextPosition.fromPoint(el.firstChild, 0);
+        const firstChild = el.firstChild;
+        if (!firstChild) {
+          fail('firstChild is null');
+          return;
+        }
+        const pos = TextPosition.fromPoint(firstChild, 0);
 
         expect(() => {
           pos.relativeTo(document.body);
@@ -133,7 +146,12 @@ describe('annotator/anchoring/text-range', () => {
         parent.append('bc', child);
         child.append('def');
 
-        const childPos = TextPosition.fromPoint(child.firstChild, 3);
+        const firstChild = child.firstChild;
+        if (!firstChild) {
+          fail('firstChild is null');
+          return;
+        }
+        const childPos = TextPosition.fromPoint(firstChild, 3);
 
         const parentPos = childPos.relativeTo(parent);
         expect(parentPos.element).toEqual(parent);
@@ -152,7 +170,12 @@ describe('annotator/anchoring/text-range', () => {
         child.append('def');
         parent.append(comment, piNode, child);
 
-        const childPos = TextPosition.fromPoint(child.firstChild, 3);
+        const firstChild = child.firstChild;
+        if (!firstChild) {
+          fail('firstChild is null');
+          return;
+        }
+        const childPos = TextPosition.fromPoint(firstChild, 3);
         const parentPos = childPos.relativeTo(parent);
 
         expect(parentPos.element).toEqual(parent);
@@ -168,7 +191,8 @@ describe('annotator/anchoring/text-range', () => {
         const pos = TextPosition.fromPoint(el.childNodes[1], 0);
 
         assertNodesEqual(pos.element, el);
-        expect(pos.offset).toEqual(el.textContent.indexOf('two'));
+        const elText = el.textContent || '';
+        expect(pos.offset).toEqual(elText.indexOf('two'));
       });
 
       it('returns TextPosition for offset in Element node', () => {
@@ -178,7 +202,8 @@ describe('annotator/anchoring/text-range', () => {
         const pos = TextPosition.fromPoint(el, 1);
 
         assertNodesEqual(pos.element, el);
-        expect(pos.offset).toEqual(el.textContent.indexOf('bar'));
+        const elText = el.textContent || '';
+        expect(pos.offset).toEqual(elText.indexOf('bar'));
       });
 
       it('ignores text in comments and processing instructions', () => {
@@ -209,7 +234,12 @@ describe('annotator/anchoring/text-range', () => {
         const testContainer = document.createElement('div');
         testContainer.textContent = 'This is a test';
         expect(() => {
-          TextPosition.fromPoint(testContainer.firstChild, 100);
+          const firstChild = testContainer.firstChild;
+          if (!firstChild) {
+            fail('firstChild is null');
+            return;
+          }
+          TextPosition.fromPoint(firstChild, 100);
         }).toThrowError('Text node offset is out of range');
       });
 
@@ -245,7 +275,7 @@ describe('annotator/anchoring/text-range', () => {
 
         const textRange = new TextRange(
           new TextPosition(el, 0),
-          new TextPosition(el, el.textContent.length)
+          new TextPosition(el, (el.textContent || '').length)
         );
         const range = textRange.toRange();
 

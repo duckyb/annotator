@@ -64,7 +64,7 @@ export class TextQuoteAnchor {
    * @param {Node} root
    * @param {Range} range
    */
-  static fromRange(root: HTMLElement, range: Range) {
+  static fromRange(_: HTMLElement, range: Range) {
     // Get the common ancestor container of the range
     const container = range.commonAncestorContainer;
     const containerElement =
@@ -179,8 +179,7 @@ export class TextQuoteAnchor {
    *   @param {number} [options.hint] -
    *     Offset hint to disambiguate matches
    */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  toRange(options: QuerySelectorOptions = {}) {
+  toRange(_options: QuerySelectorOptions = {}) {
     // Get text content from the root
     const text = TextQuoteAnchor.getTextContent(this.root);
 

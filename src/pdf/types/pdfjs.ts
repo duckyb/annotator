@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/ban-types */
+// Explicit function types are used instead of the generic Function type
 /**
  * This module defines the subset of the PDF.js interface that the client relies
  * on.
@@ -166,12 +166,12 @@ export type PDFViewer = {
  * Defined in `web/ui_utils.js` in the PDF.js source.
  *
  * @typedef EventBus
- * @prop {(event: string, listener: Function) => void} on
- * @prop {(event: string, listener: Function) => void} off
+ * @prop {(event: string, listener: (...args: unknown[]) => void) => void} on
+ * @prop {(event: string, listener: (...args: unknown[]) => void) => void} off
  */
 export type EventBus = {
-  on: (event: string, listener: Function) => void;
-  off: (event: string, listener: Function) => void;
+  on: (event: string, listener: (...args: unknown[]) => void) => void;
+  off: (event: string, listener: (...args: unknown[]) => void) => void;
 };
 
 /**

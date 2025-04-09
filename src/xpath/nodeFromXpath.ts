@@ -13,7 +13,7 @@ import { evaluateSimpleXPath } from './evaluateSimpleXpath';
 export function nodeFromXPath(xpath: string, root = document.body) {
   try {
     return evaluateSimpleXPath(xpath, root);
-  } catch (err) {
+  } catch {
     return (
       (
         document.evaluate(

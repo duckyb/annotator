@@ -16,28 +16,13 @@ export class TextPositionAnchor {
     this.end = end;
   }
 
-  /**
-   * Get text content from a specific node and its descendants
-   */
-  private static getTextContent(node: Node): string {
-    if (node.nodeType === Node.TEXT_NODE) {
-      return node.textContent || '';
-    }
-
-    let text = '';
-    const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT);
-    let currentNode;
-    while ((currentNode = walker.nextNode())) {
-      text += currentNode.textContent;
-    }
-    return text;
-  }
+  // Method removed as it was unused
 
   /**
    * @param {Node} root
    * @param {Range} range
    */
-  static fromRange(root: HTMLElement, range: Range) {
+  static fromRange(_: HTMLElement, range: Range) {
     // Get the common ancestor container of the range
     const container = range.commonAncestorContainer;
     const containerElement =

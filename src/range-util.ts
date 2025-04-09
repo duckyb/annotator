@@ -30,7 +30,7 @@ export function isNodeInRange(range: Range, node: HTMLElement): boolean {
       // Check end of node is after start of range.
       range.comparePoint(node, length) >= 0
     );
-  } catch (e) {
+  } catch {
     // `comparePoint` may fail if the `range` and `node` do not share a common
     // ancestor or `node` is a doctype.
     return false;

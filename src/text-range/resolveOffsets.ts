@@ -23,18 +23,18 @@ export function resolveOffsets(element: HTMLElement, ...offsets: number[]) {
   // of `element`.
   while (nextOffset !== undefined && currentNode) {
     textNode = /** @type {Text} */ currentNode;
-    if (length + textNode.data.length > nextOffset) {
+    if (length + (textNode as Text).data.length > nextOffset) {
       results.push({ node: textNode, offset: nextOffset - length });
       nextOffset = offsets.shift();
     } else {
       currentNode = nodeIter.nextNode();
-      length += textNode.data.length;
+      length += (textNode as Text).data.length;
     }
   }
 
   // Boundary case.
   while (nextOffset !== undefined && textNode && length === nextOffset) {
-    results.push({ node: textNode, offset: textNode.data.length });
+    results.push({ node: textNode, offset: (textNode as Text).data.length });
     nextOffset = offsets.shift();
   }
 

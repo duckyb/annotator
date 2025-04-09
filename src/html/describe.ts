@@ -27,7 +27,7 @@ export function describe(
     try {
       const selectedAnchor = type.fromRange(root as HTMLElement, range);
       result.push(selectedAnchor.toSelector());
-    } catch (error) {
+    } catch {
       // do nothing
     }
   });
