@@ -4,115 +4,20 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Annotator Library Demo</title>
-    <!-- Import Material Icons from Google Fonts -->
     <link
       href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet"
     />
-    <style>
-      body {
-        font-family:
-          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
-          Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-        line-height: 1.6;
-        color: #333;
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 20px;
-      }
-
-      .button-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-bottom: 20px;
-      }
-
-      button {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        padding: 8px 16px;
-        border-radius: 4px;
-        border: none;
-        cursor: pointer;
-        font-size: 14px;
-        font-weight: 500;
-        transition: all 0.2s ease;
-      }
-
-      .btn-primary {
-        background-color: #007bff;
-        color: white;
-      }
-
-      .btn-success {
-        background-color: #28a745;
-        color: white;
-      }
-
-      .btn-info {
-        background-color: #17a2b8;
-        color: white;
-      }
-
-      .btn-danger {
-        background-color: #dc3545;
-        color: white;
-      }
-
-      button:hover {
-        opacity: 0.9;
-        transform: translateY(-1px);
-      }
-
-      button:active {
-        transform: translateY(1px);
-      }
-
-      .material-icons {
-        font-size: 18px;
-      }
-
-      #content {
-        padding: 20px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        margin-bottom: 20px;
-      }
-
-      .highlight {
-        background-color: rgba(255, 255, 0, 0.3);
-      }
-
-      .custom-highlight {
-        background-color: rgba(255, 165, 0, 0.3);
-        border-bottom: 1px dashed orange;
-      }
-
-      .quote-highlight {
-        background-color: rgba(144, 238, 144, 0.3);
-        border-bottom: 1px dashed green;
-      }
-
-      .position-highlight {
-        background-color: rgba(173, 216, 230, 0.3);
-        border-bottom: 1px dashed blue;
-      }
-
-      .range-highlight {
-        background-color: rgba(221, 160, 221, 0.3);
-        border-bottom: 1px dashed purple;
-      }
-
-      pre {
-        background-color: #f5f5f5;
-        padding: 15px;
-        border-radius: 4px;
-        overflow: auto;
-      }
-    </style>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <h1>Annotator Library Demo</h1>
@@ -143,6 +48,64 @@
       </p>
     </div>
 
+    <div class="color-selector">
+      <h3>Highlight Color</h3>
+      <div class="color-circles">
+        <label class="color-circle-label">
+          <input type="radio" name="highlight-color" value="#FFFF00" checked />
+          <span
+            class="color-circle"
+            style="background-color: rgba(255, 255, 0, 0.7)"
+          ></span>
+        </label>
+        <label class="color-circle-label">
+          <input type="radio" name="highlight-color" value="#90EE90" />
+          <span
+            class="color-circle"
+            style="background-color: rgba(144, 238, 144, 0.7)"
+          ></span>
+        </label>
+        <label class="color-circle-label">
+          <input type="radio" name="highlight-color" value="#ADD8E6" />
+          <span
+            class="color-circle"
+            style="background-color: rgba(173, 216, 230, 0.7)"
+          ></span>
+        </label>
+        <label class="color-circle-label">
+          <input type="radio" name="highlight-color" value="#FFB6C1" />
+          <span
+            class="color-circle"
+            style="background-color: rgba(255, 182, 193, 0.7)"
+          ></span>
+        </label>
+        <label class="color-circle-label">
+          <input
+            type="color"
+            id="custom-color"
+            value="#FFFF00"
+            style="display: none"
+          />
+          <span
+            class="color-circle custom"
+            style="
+              background: linear-gradient(
+                135deg,
+                #fff 0%,
+                #fff 25%,
+                #f0f 25%,
+                #f0f 50%,
+                #0ff 50%,
+                #0ff 75%,
+                #ff0 75%,
+                #ff0 100%
+              );
+            "
+          ></span>
+        </label>
+      </div>
+    </div>
+
     <div class="button-container">
       <button id="annotation-btn" class="btn btn-primary">
         <i class="material-icons">comment</i> Create Annotation
@@ -156,264 +119,38 @@
     </div>
 
     <div id="output">
-      <h3>Annotation Output</h3>
+      <h3>Annotation Data</h3>
       <pre id="annotation-output">
-Select some text and click "Create Annotation" to see the output here.</pre
+Select some text and click "Create Annotation" to see the output data here.</pre
       >
     </div>
 
-    <script type="module">
-      // Import from your bundled library
-      import { Annotator } from '../dist/index.esm.js';
+    <!-- Toast container for notifications -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+      <div
+        id="notification-toast"
+        class="toast"
+        role="alert"
+        aria-live="assertive"
+        aria-atomic="true"
+      >
+        <div class="toast-header">
+          <strong class="me-auto" id="toast-title">Notification</strong>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="toast"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="toast-body" id="toast-message">Message goes here</div>
+      </div>
+    </div>
 
-      // Create an instance of the Annotator class
-      const annotator = new Annotator();
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-      // Set a mock document context - can be a string
-      annotator.setContext('annotator-demo');
-
-      // Alternatively, context can be an object with any properties
-      // Example with an object context:
-      // annotator.setContext({
-      //   documentId: 'annotator-demo',
-      //   pageNumber: 1,
-      //   customProperty: 'custom-value'
-      // });
-
-      // Note: We've removed the basic highlighting function since an annotation without metadata
-      // serves the same purpose. Now we only have the more flexible createAnnotation function.
-
-      // Create annotation example
-      function createAnnotation() {
-        const contentElement = document.getElementById('content');
-        const selection = window.getSelection();
-
-        if (selection.rangeCount > 0) {
-          const range = selection.getRangeAt(0);
-          if (!range.collapsed) {
-            try {
-              // Create a full annotation using the annotator
-              const annotationWithHighlights = annotator.createAnnotation({
-                root: contentElement,
-                range: range,
-                context: {
-                  documentId: 'annotator-demo',
-                },
-                metadata: {
-                  type: 'annotation',
-                  createdAt: new Date().toISOString(),
-                  createdBy: 'demo-user',
-                  comment: 'This is an important passage',
-                  tags: ['important', 'review']
-                }
-              });
-
-              // Add custom class to highlights
-              if (annotationWithHighlights.highlights) {
-                annotationWithHighlights.highlights.forEach((highlight) => {
-                  highlight.classList.add('quote-highlight');
-                });
-              }
-
-              // Store the annotation ID for later reference
-              window.currentAnnotationIds = window.currentAnnotationIds || [];
-              window.currentAnnotationIds.push(annotationWithHighlights.id);
-
-              // Display the annotation
-              document.getElementById('annotation-output').textContent =
-                JSON.stringify(annotationWithHighlights, null, 2);
-            } catch (e) {
-              console.error('Error creating annotation:', e);
-              alert('Error creating annotation');
-            }
-          } else {
-            alert('Please select some text first');
-          }
-        } else {
-          alert('Please select some text first');
-        }
-      }
-
-      // Function to clear all annotations
-      function clearAnnotations() {
-        if (
-          window.currentAnnotationIds &&
-          window.currentAnnotationIds.length > 0
-        ) {
-          // Remove all annotations using the annotator
-          window.currentAnnotationIds.forEach((id) => {
-            annotator.remove(id);
-          });
-          window.currentAnnotationIds = [];
-          document.getElementById('annotation-output').textContent =
-            'Select some text and click "Create Annotation" to see the output here.';
-
-          // Clear session storage as well
-          sessionStorage.removeItem('savedAnnotations');
-        } else {
-          alert('No annotations to clear');
-        }
-      }
-
-      // Function to save annotations to session storage
-      function saveAnnotations() {
-        if (
-          window.currentAnnotationIds &&
-          window.currentAnnotationIds.length > 0
-        ) {
-          // Get all annotations from the annotator
-          const savedAnnotations = [];
-          const processedIds = new Set();
-
-          // First try to find annotations with data-annotation-id attribute
-          window.currentAnnotationIds.forEach((id) => {
-            // Find all highlight elements for this annotation
-            const highlightElements = document.querySelectorAll(
-              `[data-annotation-id="${id}"]`
-            );
-
-            if (highlightElements.length > 0) {
-              // Get the annotation data from the highlight attribute
-              const annotationData =
-                highlightElements[0].getAttribute('data-annotation');
-              if (annotationData) {
-                try {
-                  const annotation = JSON.parse(annotationData);
-                  savedAnnotations.push(annotation);
-                  processedIds.add(id);
-                } catch (e) {
-                  console.error('Error parsing annotation data:', e);
-                }
-              }
-            }
-          });
-
-          // For any IDs not found with data-annotation-id, try to find them with data-id
-          window.currentAnnotationIds.forEach((id) => {
-            if (!processedIds.has(id)) {
-              const highlightElements = document.querySelectorAll(
-                `.highlight[data-id="${id}"]`
-              );
-
-              if (highlightElements.length > 0) {
-                // We need to reconstruct the annotation from the DOM
-                // This is a simplified version - in a real app, you'd want to extract more data
-                const annotation = {
-                  id: id,
-                  context: {
-                    documentId: 'annotator-demo',
-                  },
-                  serializedBy: 'annotator-demo',
-                };
-
-                // Add data attributes to the highlight elements for future saves
-                highlightElements.forEach((highlight) => {
-                  highlight.setAttribute('data-annotation-id', id);
-                  highlight.setAttribute(
-                    'data-annotation',
-                    JSON.stringify(annotation)
-                  );
-                });
-
-                savedAnnotations.push(annotation);
-              }
-            }
-          });
-
-          // Save to session storage
-          if (savedAnnotations.length > 0) {
-            sessionStorage.setItem(
-              'savedAnnotations',
-              JSON.stringify(savedAnnotations)
-            );
-            alert(
-              `Saved ${savedAnnotations.length} annotations to session storage`
-            );
-          } else {
-            alert('No annotations to save');
-          }
-        } else {
-          alert('No annotations to save');
-        }
-      }
-
-      // Function to load annotations from session storage
-      function loadSavedAnnotations() {
-        const savedAnnotationsJson = sessionStorage.getItem('savedAnnotations');
-        if (savedAnnotationsJson) {
-          try {
-            const savedAnnotations = JSON.parse(savedAnnotationsJson);
-            if (savedAnnotations && savedAnnotations.length > 0) {
-              console.log(
-                `Loading ${savedAnnotations.length} saved annotations`
-              );
-
-              // Load annotations using the annotator
-              const contentElement = document.getElementById('content');
-              annotator.load(savedAnnotations, contentElement);
-
-              // After loading, we need to add the data attributes to the highlight elements
-              // so they can be saved again later
-              setTimeout(() => {
-                savedAnnotations.forEach((annotation) => {
-                  // Find all highlight elements for this annotation
-                  const highlightElements = document.querySelectorAll(
-                    `[data-annotation-id="${annotation.id}"], .highlight[data-id="${annotation.id}"]`
-                  );
-
-                  // Add data attributes to each highlight element
-                  highlightElements.forEach((highlight) => {
-                    highlight.setAttribute('data-annotation-id', annotation.id);
-                    highlight.setAttribute(
-                      'data-annotation',
-                      JSON.stringify(annotation)
-                    );
-                  });
-                });
-              }, 100); // Small delay to ensure DOM is updated
-
-              // Update the current annotation IDs
-              window.currentAnnotationIds = savedAnnotations.map((a) => a.id);
-
-              // Display the last annotation in the output
-              if (savedAnnotations.length > 0) {
-                document.getElementById('annotation-output').textContent =
-                  JSON.stringify(
-                    savedAnnotations[savedAnnotations.length - 1],
-                    null,
-                    2
-                  );
-              }
-            }
-          } catch (e) {
-            console.error('Error loading saved annotations:', e);
-          }
-        }
-      }
-
-      // Add event listeners to buttons
-      window.addEventListener('DOMContentLoaded', () => {
-        // Get the buttons
-        const annotationButton = document.getElementById('annotation-btn');
-        const saveButton = document.getElementById('save-btn');
-        const clearButton = document.getElementById('clear-btn');
-
-        // Initialize the annotation IDs array
-        window.currentAnnotationIds = [];
-
-        // Subscribe to annotator events
-        annotator.getEvents().on('highlight', (event) => {
-          console.log('Highlight event:', event);
-        });
-
-        // Add event listeners
-        annotationButton.addEventListener('click', createAnnotation);
-        saveButton.addEventListener('click', saveAnnotations);
-        clearButton.addEventListener('click', clearAnnotations);
-
-        // Load saved annotations when the page loads
-        loadSavedAnnotations();
-      });
-    </script>
+    <!-- External script file with all the functionality -->
+    <script type="module" src="script.js"></script>
   </body>
 </html>
