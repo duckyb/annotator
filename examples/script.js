@@ -126,20 +126,15 @@ function createAnnotation() {
 
 // Save annotations to session storage
 function saveAnnotations() {
-  // Check if there are any annotation IDs
-  if (
-    !window.currentAnnotationIds ||
-    !Array.isArray(window.currentAnnotationIds) ||
-    window.currentAnnotationIds.length === 0
-  ) {
-    showNotification('No annotations to save', 'Warning', 'warning');
-    return;
-  }
-
-  // Get all annotations from the global map
+  // Initialize an empty array for annotations
   const annotations = [];
-
-  if (window.annotationsMap) {
+  
+  // If we have annotation IDs and a map, process them
+  if (
+    window.currentAnnotationIds &&
+    Array.isArray(window.currentAnnotationIds) &&
+    window.annotationsMap
+  ) {
     // Process each annotation ID
     window.currentAnnotationIds.forEach((annotationId) => {
       const annotation = window.annotationsMap[annotationId];
@@ -149,9 +144,11 @@ function saveAnnotations() {
     });
   }
 
-  // Save annotations to session storage
+  // Always save to session storage, even if the array is empty
+  // This allows saving a clean state with no annotations
+  sessionStorage.setItem('annotations', JSON.stringify(annotations));
+  
   if (annotations.length > 0) {
-    sessionStorage.setItem('annotations', JSON.stringify(annotations));
     showNotification(
       `Saved ${annotations.length} annotation(s)`,
       'Success',
@@ -159,9 +156,9 @@ function saveAnnotations() {
     );
   } else {
     showNotification(
-      'No valid annotations found to save',
-      'Warning',
-      'warning'
+      'Saved clean state (0 annotations)',
+      'Success',
+      'success'
     );
   }
 }
