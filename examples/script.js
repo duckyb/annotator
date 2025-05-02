@@ -17,9 +17,6 @@ function initializeAnnotator() {
     documentId: 'annotator-demo',
   });
 
-  // Set up custom color picker
-  setupColorPicker();
-
   // Set up event listeners for buttons
   setupEventListeners();
 
@@ -29,13 +26,7 @@ function initializeAnnotator() {
 
 // Function to get the selected highlight color
 function getSelectedColor() {
-  // Check if custom color is active
-  const customColorInput = document.getElementById('custom-color');
-  if (customColorInput.dataset.active === 'true') {
-    return customColorInput.value;
-  }
-
-  // Otherwise get the selected radio button value
+  // Get the selected radio button value
   const colorRadios = document.getElementsByName('highlight-color');
   for (const radio of colorRadios) {
     if (radio.checked) {
@@ -62,19 +53,6 @@ function createAnnotation() {
           .getElementById('annotation-comment')
           .value.trim();
 
-        // Create metadata object
-        const metadata = {
-          type: 'annotation',
-          createdAt: new Date().toISOString(),
-          createdBy: 'demo-user',
-          tags: ['important', 'review'],
-        };
-        
-        // Only add comment to metadata if one was provided
-        if (commentText) {
-          metadata.comment = commentText;
-        }
-        
         // Create a full annotation using the annotator
         const annotationWithHighlights = annotator.createAnnotation({
           root: contentElement,
@@ -84,7 +62,12 @@ function createAnnotation() {
           },
           // Pass the color directly to the createAnnotation method
           color: selectedColor,
-          metadata: metadata,
+          metadata: {
+            type: 'annotation',
+            createdAt: new Date().toISOString(),
+            createdBy: 'demo-user',
+            comment: commentText || undefined,
+          },
         });
 
         // Add the highlights to the page
@@ -95,14 +78,13 @@ function createAnnotation() {
               'data-annotation-id',
               annotationWithHighlights.id
             );
-
-            // Also store the full annotation data as a serialized JSON string
-            highlight.setAttribute(
-              'data-annotation',
-              JSON.stringify(annotationWithHighlights)
-            );
           });
         }
+
+        // Store the annotation in a global map for easy retrieval
+        window.annotationsMap = window.annotationsMap || {};
+        window.annotationsMap[annotationWithHighlights.id] =
+          annotationWithHighlights;
 
         // Store the annotation ID for later reference
         window.currentAnnotationIds = window.currentAnnotationIds || [];
@@ -144,56 +126,45 @@ function createAnnotation() {
 
 // Save annotations to session storage
 function saveAnnotations() {
-  if (window.currentAnnotationIds && window.currentAnnotationIds.length > 0) {
-    // Get all annotations from the annotator
-    const savedAnnotations = [];
-    const processedIds = new Set();
+  // Check if there are any annotation IDs
+  if (
+    !window.currentAnnotationIds ||
+    !Array.isArray(window.currentAnnotationIds) ||
+    window.currentAnnotationIds.length === 0
+  ) {
+    showNotification('No annotations to save', 'Warning', 'warning');
+    return;
+  }
 
-    // First try to find annotations with data-annotation-id attribute
-    window.currentAnnotationIds.forEach((id) => {
-      // Find all highlight elements for this annotation
-      const highlightElements = document.querySelectorAll(
-        `[data-annotation-id="${id}"]`
-      );
+  // Get all annotations from the global map
+  const annotations = [];
 
-      if (highlightElements.length > 0) {
-        // Get the annotation data from the highlight attribute
-        const annotationData =
-          highlightElements[0].getAttribute('data-annotation');
-        if (annotationData) {
-          try {
-            const annotation = JSON.parse(annotationData);
-            if (annotation && !processedIds.has(annotation.id)) {
-              savedAnnotations.push(annotation);
-              processedIds.add(annotation.id);
-            }
-          } catch (e) {
-            console.error('Error parsing annotation data:', e);
-          }
-        }
+  if (window.annotationsMap) {
+    // Process each annotation ID
+    window.currentAnnotationIds.forEach((annotationId) => {
+      const annotation = window.annotationsMap[annotationId];
+      if (annotation) {
+        // Create a clean version of the annotation without DOM elements
+        const cleanAnnotation = createCleanAnnotationData(annotation);
+        annotations.push(cleanAnnotation);
       }
     });
+  }
 
-    if (savedAnnotations.length > 0) {
-      // Store annotations in session storage
-      sessionStorage.setItem(
-        'savedAnnotations',
-        JSON.stringify(savedAnnotations)
-      );
-
-      // Show success notification
-      showNotification(
-        `Saved ${savedAnnotations.length} annotations to session storage`,
-        'Save Successful',
-        'success'
-      );
-    } else {
-      // Show warning notification
-      showNotification('No annotations found to save', 'Warning', 'warning');
-    }
+  // Save annotations to session storage
+  if (annotations.length > 0) {
+    sessionStorage.setItem('annotations', JSON.stringify(annotations));
+    showNotification(
+      `Saved ${annotations.length} annotation(s)`,
+      'Success',
+      'success'
+    );
   } else {
-    // Show info notification
-    showNotification('There are no annotations to save', 'Information', 'info');
+    showNotification(
+      'No valid annotations found to save',
+      'Warning',
+      'warning'
+    );
   }
 }
 
@@ -218,7 +189,7 @@ function clearAnnotations() {
 function loadSavedAnnotations() {
   try {
     // Get saved annotations from session storage
-    const savedAnnotations = sessionStorage.getItem('savedAnnotations');
+    const savedAnnotations = sessionStorage.getItem('annotations');
 
     if (savedAnnotations) {
       // Parse the saved annotations
@@ -228,8 +199,9 @@ function loadSavedAnnotations() {
         // Clear any existing annotations
         clearAnnotations(false);
 
-        // Initialize the annotation IDs array
+        // Initialize the annotation IDs array and annotations map
         window.currentAnnotationIds = [];
+        window.annotationsMap = {};
 
         // Add each annotation to the page
         annotations.forEach((annotation) => {
@@ -255,15 +227,14 @@ function loadSavedAnnotations() {
 
             // If highlights were created successfully
             if (highlights && highlights.length > 0) {
-              // Store the annotation data in the highlight elements
+              // Store the annotation ID in the highlight elements
               highlights.forEach((highlight) => {
-                // Store the annotation ID and data
                 highlight.setAttribute('data-annotation-id', annotation.id);
-                highlight.setAttribute(
-                  'data-annotation',
-                  JSON.stringify(annotation)
-                );
               });
+
+              // Store the full annotation in the global map
+              const fullAnnotation = { ...annotation, highlights };
+              window.annotationsMap[annotation.id] = fullAnnotation;
             }
           } catch (e) {
             console.error('Error loading annotation:', e);
@@ -331,58 +302,12 @@ function showNotification(message, title = 'Notification', type = 'info') {
   toast.show();
 }
 
-// Function to set up the color picker
-function setupColorPicker() {
-  const customColorCircle = document.querySelector('.color-circle.custom');
-  const customColorInput = document.getElementById('custom-color');
-
-  // When the rainbow circle is clicked, open the color picker
-  customColorCircle.addEventListener('click', () => {
-    customColorInput.click();
-  });
-
-  // When a color is selected in the color picker
-  customColorInput.addEventListener('input', () => {
-    // Deselect all radio buttons
-    const colorRadios = document.getElementsByName('highlight-color');
-    colorRadios.forEach((radio) => {
-      radio.checked = false;
-    });
-
-    // Mark the custom color as active
-    customColorInput.dataset.active = 'true';
-
-    // Update the rainbow circle to show the selected color
-    customColorCircle.style.background = customColorInput.value;
-  });
-
-  // When a predefined color is selected, deactivate the custom color
-  const colorRadios = document.getElementsByName('highlight-color');
-  colorRadios.forEach((radio) => {
-    radio.addEventListener('change', () => {
-      customColorInput.dataset.active = 'false';
-      customColorCircle.style.background =
-        'linear-gradient(135deg, #FFF 0%, #FFF 25%, #F0F 25%, #F0F 50%, #0FF 50%, #0FF 75%, #FF0 75%, #FF0 100%)';
-    });
-  });
-}
-
 // Function to display annotation data in the preview box
 function displayAnnotationData(annotation) {
   const outputElement = document.getElementById('annotation-output');
 
   // Display the annotation as formatted JSON, matching the format used when creating annotations
   outputElement.textContent = JSON.stringify(annotation, null, 2);
-  
-  // Update the comment field if it exists in the annotation's metadata
-  const commentField = document.getElementById('annotation-comment');
-  if (commentField) {
-    if (annotation.metadata && annotation.metadata.comment) {
-      commentField.value = annotation.metadata.comment;
-    } else {
-      commentField.value = '';
-    }
-  }
 }
 
 // Function to handle clicks on annotation highlights
@@ -390,15 +315,17 @@ function handleAnnotationClick(event) {
   // Check if the clicked element or any of its parents is a highlight
   let target = event.target;
 
-  // Traverse up the DOM to find a highlight element with annotation data
+  // Traverse up the DOM to find a highlight element with annotation ID
   while (target && target !== document) {
-    if (target.hasAttribute('data-annotation')) {
-      // Get the annotation data
-      try {
-        const annotationData = JSON.parse(
-          target.getAttribute('data-annotation')
-        );
+    if (target.hasAttribute('data-annotation-id')) {
+      // Get the annotation ID
+      const annotationId = target.getAttribute('data-annotation-id');
 
+      // Retrieve the annotation from the global map
+      const annotationData =
+        window.annotationsMap && window.annotationsMap[annotationId];
+
+      if (annotationData) {
         // Display the annotation data
         displayAnnotationData(annotationData);
 
@@ -409,7 +336,6 @@ function handleAnnotationClick(event) {
         });
 
         // Add 'selected' class to the clicked highlight and its siblings with the same ID
-        const annotationId = target.getAttribute('data-annotation-id');
         document
           .querySelectorAll(`[data-annotation-id="${annotationId}"]`)
           .forEach((el) => {
@@ -419,14 +345,50 @@ function handleAnnotationClick(event) {
         // Stop event propagation
         event.stopPropagation();
         return;
-      } catch (e) {
-        console.error('Error parsing annotation data:', e);
       }
     }
 
     // Move up to the parent element
     target = target.parentElement;
   }
+}
+
+// Function to create a clean version of the annotation data without DOM elements
+function createCleanAnnotationData(annotation) {
+  // Create a new object with only the serializable properties
+  const cleanAnnotation = {
+    id: annotation.id,
+    context: annotation.context,
+    serializedBy: annotation.serializedBy,
+    color: annotation.color,
+  };
+
+  // Include metadata if it exists
+  if (annotation.metadata) {
+    cleanAnnotation.metadata = { ...annotation.metadata };
+  }
+
+  // If there are text selectors, include them
+  if (annotation.rangeSelector) {
+    cleanAnnotation.rangeSelector = annotation.rangeSelector;
+  }
+
+  if (annotation.textPositionSelector) {
+    cleanAnnotation.textPositionSelector = annotation.textPositionSelector;
+  }
+
+  if (annotation.textQuoteSelector) {
+    cleanAnnotation.textQuoteSelector = annotation.textQuoteSelector;
+  }
+
+  // Add highlight count instead of the actual DOM elements
+  if (annotation.highlights && Array.isArray(annotation.highlights)) {
+    cleanAnnotation.highlightCount = annotation.highlights.length;
+  } else {
+    cleanAnnotation.highlightCount = 0;
+  }
+
+  return cleanAnnotation;
 }
 
 // Function to set up event listeners for buttons
