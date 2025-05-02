@@ -1,7 +1,7 @@
 import type { HighlightElement } from './types';
 import { drawHighlightsAbovePdfCanvas } from './drawHighlightsAbovePdfCanvas';
 import { wholeTextNodesInRange } from './wholeTextNodesInRange';
-import { hexToRgba, getDarkerColor } from '../utils/color-utils';
+import { hexToRgba } from '../utils/color-utils';
 
 /**
  * Wraps the DOM Nodes within the provided range with a highlight
@@ -67,10 +67,8 @@ export function highlightRange(
     // Apply inline styles if a color is provided
     if (color) {
       const backgroundColor = hexToRgba(color);
-      const borderColor = getDarkerColor(color);
       
       highlightEl.style.backgroundColor = backgroundColor;
-      highlightEl.style.borderBottom = `1px dashed ${borderColor}`;
       highlightEl.setAttribute('data-highlight-color', color);
     }
 
