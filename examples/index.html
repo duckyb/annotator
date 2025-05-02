@@ -144,9 +144,6 @@
     </div>
 
     <div class="button-container">
-      <button id="highlight-btn" class="btn btn-primary">
-        <i class="material-icons">highlight</i> Basic Highlighting
-      </button>
       <button id="annotation-btn" class="btn btn-primary">
         <i class="material-icons">comment</i> Create Annotation
       </button>
@@ -183,64 +180,8 @@ Select some text and click "Create Annotation" to see the output here.</pre
       //   customProperty: 'custom-value'
       // });
 
-      // Basic highlighting example
-      function basicHighlighting() {
-        const contentElement = document.getElementById('content');
-        const selection = window.getSelection();
-
-        if (selection.rangeCount > 0) {
-          const range = selection.getRangeAt(0);
-          if (!range.collapsed) {
-            try {
-              // Create a mock annotation using the annotator
-              const annotationWithHighlights = annotator.createAnnotation({
-                root: contentElement,
-                range: range,
-                context: {
-                  documentId: 'annotator-demo',
-                },
-                metadata: {
-                  type: 'highlight',
-                  createdAt: new Date().toISOString(),
-                  createdBy: 'demo-user'
-                }
-              });
-
-              // Store annotation data in the highlight elements for later retrieval
-              if (annotationWithHighlights.highlights) {
-                annotationWithHighlights.highlights.forEach((highlight) => {
-                  highlight.setAttribute(
-                    'data-annotation-id',
-                    annotationWithHighlights.id
-                  );
-                  highlight.setAttribute(
-                    'data-annotation',
-                    JSON.stringify(annotationWithHighlights)
-                  );
-                });
-              }
-
-              // Add custom class to highlights
-              if (annotationWithHighlights.highlights) {
-                annotationWithHighlights.highlights.forEach((highlight) => {
-                  highlight.classList.add('custom-highlight');
-                });
-              }
-
-              // Store the annotation ID for later reference
-              window.currentAnnotationIds = window.currentAnnotationIds || [];
-              window.currentAnnotationIds.push(annotationWithHighlights.id);
-            } catch (e) {
-              console.error('Error highlighting:', e);
-              alert('Error creating highlight');
-            }
-          } else {
-            alert('Please select some text first');
-          }
-        } else {
-          alert('Please select some text first');
-        }
-      }
+      // Note: We've removed the basic highlighting function since an annotation without metadata
+      // serves the same purpose. Now we only have the more flexible createAnnotation function.
 
       // Create annotation example
       function createAnnotation() {
@@ -453,7 +394,6 @@ Select some text and click "Create Annotation" to see the output here.</pre
       // Add event listeners to buttons
       window.addEventListener('DOMContentLoaded', () => {
         // Get the buttons
-        const highlightButton = document.getElementById('highlight-btn');
         const annotationButton = document.getElementById('annotation-btn');
         const saveButton = document.getElementById('save-btn');
         const clearButton = document.getElementById('clear-btn');
@@ -467,7 +407,6 @@ Select some text and click "Create Annotation" to see the output here.</pre
         });
 
         // Add event listeners
-        highlightButton.addEventListener('click', basicHighlighting);
         annotationButton.addEventListener('click', createAnnotation);
         saveButton.addEventListener('click', saveAnnotations);
         clearButton.addEventListener('click', clearAnnotations);
