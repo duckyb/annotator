@@ -64,9 +64,10 @@ function createAnnotation() {
           context: {
             documentId: 'annotator-demo',
           },
+          // Pass the color directly to the createAnnotation method
+          color: selectedColor,
           metadata: {
             type: 'annotation',
-            color: selectedColor,
             createdAt: new Date().toISOString(),
             createdBy: 'demo-user',
             comment: 'This is an important passage',
@@ -76,8 +77,11 @@ function createAnnotation() {
 
         // Apply custom color styling to highlights
         if (annotationWithHighlights.highlights) {
+          // Get the color directly from the annotation object, default to yellow if undefined
+          const color = annotationWithHighlights.color || '#FFFF00';
+          
           // Convert hex color to rgba with opacity
-          const hexColor = selectedColor.replace('#', '');
+          const hexColor = color.replace('#', '');
           const r = parseInt(hexColor.substring(0, 2), 16);
           const g = parseInt(hexColor.substring(2, 4), 16);
           const b = parseInt(hexColor.substring(4, 6), 16);
@@ -87,17 +91,17 @@ function createAnnotation() {
 
           // Create border colors based on the original colors
           let borderColor;
-          if (selectedColor === '#FFFF00') {
+          if (color === '#FFFF00') {
             borderColor = '#e6c700'; // Yellow border
-          } else if (selectedColor === '#90EE90') {
+          } else if (color === '#90EE90') {
             borderColor = '#4caf50'; // Green border
-          } else if (selectedColor === '#ADD8E6') {
+          } else if (color === '#ADD8E6') {
             borderColor = '#2196f3'; // Blue border
-          } else if (selectedColor === '#FFB6C1') {
+          } else if (color === '#FFB6C1') {
             borderColor = '#e91e63'; // Pink border
           } else {
             // For custom colors, use a darker version of the same color
-            borderColor = `rgba(${Math.max(0, r - 40)}, ${Math.max(0, g - 40)}, ${Math.max(0, b - 40)}, 0.7)`;
+            borderColor = `rgba(${Math.max(0, r - 40)}, ${Math.max(0, g - 40)}, ${Math.max(0, b - 40)}, 0.7}`;
           }
 
           // Apply the color to each highlight element
@@ -232,25 +236,36 @@ function clearAnnotations() {
 
 // Load saved annotations from session storage
 function loadSavedAnnotations() {
-  const savedAnnotationsJson = sessionStorage.getItem('savedAnnotations');
-  if (savedAnnotationsJson) {
-    try {
-      const savedAnnotations = JSON.parse(savedAnnotationsJson);
-      if (savedAnnotations && savedAnnotations.length > 0) {
-        const contentElement = document.getElementById('content');
+  try {
+    // Get saved annotations from session storage
+    const savedAnnotations = sessionStorage.getItem('savedAnnotations');
+
+    if (savedAnnotations) {
+      // Parse the saved annotations
+      const annotations = JSON.parse(savedAnnotations);
+
+      if (annotations && annotations.length > 0) {
+        // Clear any existing annotations
+        clearAnnotations(false);
 
         // Initialize the annotation IDs array
         window.currentAnnotationIds = [];
 
-        // Load each annotation
-        savedAnnotations.forEach((annotation) => {
+        // Add each annotation to the page
+        annotations.forEach((annotation) => {
           try {
+            // Make sure the annotation has the color property directly on the object
+            // This ensures compatibility with the new approach
+            if (annotation.metadata && annotation.metadata.color && !annotation.color) {
+              annotation.color = annotation.metadata.color;
+            }
+            
             // Add the annotation ID to the list
             window.currentAnnotationIds.push(annotation.id);
-
-            // Add highlights for the annotation
+            
+            // Add the annotation to the page
             const highlights = annotator.addHighlights(
-              contentElement,
+              document.getElementById('content'),
               annotation
             );
 
@@ -268,39 +283,37 @@ function loadSavedAnnotations() {
                 // Remove any existing highlight class
                 highlight.classList.remove('highlight');
 
-                // Apply the color if available in metadata
-                if (annotation.metadata && annotation.metadata.color) {
-                  // Convert hex color to rgba with opacity
-                  const hexColor = annotation.metadata.color.replace('#', '');
-                  const r = parseInt(hexColor.substring(0, 2), 16);
-                  const g = parseInt(hexColor.substring(2, 4), 16);
-                  const b = parseInt(hexColor.substring(4, 6), 16);
-                  const backgroundColor = `rgba(${r}, ${g}, ${b}, 0.3)`;
+                // Get the color from the annotation, default to yellow if undefined
+                const color = annotation.color || '#FFFF00';
+                
+                // Convert hex color to rgba with opacity
+                const hexColor = color.replace('#', '');
+                const r = parseInt(hexColor.substring(0, 2), 16);
+                const g = parseInt(hexColor.substring(2, 4), 16);
+                const b = parseInt(hexColor.substring(4, 6), 16);
+                const backgroundColor = `rgba(${r}, ${g}, ${b}, 0.3)`;
 
-                  // Create border colors based on the original colors
-                  let borderColor;
-                  const color = annotation.metadata.color;
-                  if (color === '#FFFF00') {
-                    borderColor = '#e6c700'; // Yellow border
-                  } else if (color === '#90EE90') {
-                    borderColor = '#4caf50'; // Green border
-                  } else if (color === '#ADD8E6') {
-                    borderColor = '#2196f3'; // Blue border
-                  } else if (color === '#FFB6C1') {
-                    borderColor = '#e91e63'; // Pink border
-                  } else {
-                    // For custom colors, use a darker version of the same color
-                    borderColor = `rgba(${Math.max(0, r - 40)}, ${Math.max(0, g - 40)}, ${Math.max(0, b - 40)}, 0.7)`;
-                  }
-
-                  // Apply inline styles
-                  highlight.style.backgroundColor = backgroundColor;
-                  highlight.style.borderBottom = `1px dashed ${borderColor}`;
+                // Create border colors based on the original colors
+                let borderColor;
+                if (color === '#FFFF00') {
+                  borderColor = '#e6c700'; // Yellow border
+                } else if (color === '#90EE90') {
+                  borderColor = '#4caf50'; // Green border
+                } else if (color === '#ADD8E6') {
+                  borderColor = '#2196f3'; // Blue border
+                } else if (color === '#FFB6C1') {
+                  borderColor = '#e91e63'; // Pink border
                 } else {
-                  // Default to yellow if no color specified
-                  highlight.style.backgroundColor = 'rgba(255, 255, 0, 0.3)';
-                  highlight.style.borderBottom = '1px dashed #e6c700';
+                  // For custom colors, use a darker version of the same color
+                  borderColor = `rgba(${Math.max(0, r - 40)}, ${Math.max(0, g - 40)}, ${Math.max(0, b - 40)}, 0.7}`;
                 }
+                
+                // Apply inline styles - make sure to set them directly
+                highlight.style.backgroundColor = backgroundColor;
+                highlight.style.borderBottom = `1px dashed ${borderColor}`;
+                
+                // Store the color in a data attribute for future reference
+                highlight.setAttribute('data-highlight-color', color);
               });
             }
           } catch (e) {
@@ -308,18 +321,23 @@ function loadSavedAnnotations() {
           }
         });
 
-        // Don't update the output area with status messages, use toast notifications instead
-
         // Show success notification
         showNotification(
-          `Loaded ${savedAnnotations.length} annotations from session storage`,
+          `Loaded ${annotations.length} annotations from session storage`,
           'Annotations Loaded',
           'success'
         );
       }
-    } catch (e) {
-      console.error('Error loading saved annotations:', e);
     }
+  } catch (e) {
+    console.error('Error loading saved annotations:', e);
+    
+    // Show error notification
+    showNotification(
+      'Error loading annotations: ' + e.message,
+      'Error',
+      'error'
+    );
   }
 }
 
