@@ -53,7 +53,7 @@ function createAnnotationFromSelection() {
     pageNumber: 5,
     // Add any other context properties needed for your application
   };
-  
+
   // Define custom metadata for this annotation
   const metadata = {
     createdBy: 'user@example.com',
@@ -85,6 +85,7 @@ function createAnnotationFromSelection() {
 
 // Example usage: Call this function when a user clicks a button, for example.
 // createAnnotationFromSelection();
+```
 
 ## API Documentation
 
