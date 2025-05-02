@@ -348,12 +348,61 @@ function setupColorPicker() {
   });
 }
 
+// Function to display annotation data in the preview box
+function displayAnnotationData(annotation) {
+  const outputElement = document.getElementById('annotation-output');
+  
+  // Display the annotation as formatted JSON, matching the format used when creating annotations
+  outputElement.textContent = JSON.stringify(annotation, null, 2);
+}
+
+// Function to handle clicks on annotation highlights
+function handleAnnotationClick(event) {
+  // Check if the clicked element or any of its parents is a highlight
+  let target = event.target;
+  
+  // Traverse up the DOM to find a highlight element with annotation data
+  while (target && target !== document) {
+    if (target.hasAttribute('data-annotation')) {
+      // Get the annotation data
+      try {
+        const annotationData = JSON.parse(target.getAttribute('data-annotation'));
+        
+        // Display the annotation data
+        displayAnnotationData(annotationData);
+        
+        // Add a visual indication that this highlight is selected
+        // Remove 'selected' class from all highlights
+        document.querySelectorAll('[data-annotation-id]').forEach(el => {
+          el.classList.remove('selected-highlight');
+        });
+        
+        // Add 'selected' class to the clicked highlight and its siblings with the same ID
+        const annotationId = target.getAttribute('data-annotation-id');
+        document.querySelectorAll(`[data-annotation-id="${annotationId}"]`).forEach(el => {
+          el.classList.add('selected-highlight');
+        });
+        
+        // Stop event propagation
+        event.stopPropagation();
+        return;
+      } catch (e) {
+        console.error('Error parsing annotation data:', e);
+      }
+    }
+    
+    // Move up to the parent element
+    target = target.parentElement;
+  }
+}
+
 // Function to set up event listeners for buttons
 function setupEventListeners() {
   // Get the buttons
   const annotationButton = document.getElementById('annotation-btn');
   const saveButton = document.getElementById('save-btn');
   const clearButton = document.getElementById('clear-btn');
+  const contentElement = document.getElementById('content');
 
   // Initialize the annotation IDs array
   window.currentAnnotationIds = [];
@@ -363,10 +412,13 @@ function setupEventListeners() {
     console.log('Highlight event:', event);
   });
 
-  // Add event listeners
+  // Add event listeners for buttons
   annotationButton.addEventListener('click', createAnnotation);
   saveButton.addEventListener('click', saveAnnotations);
   clearButton.addEventListener('click', clearAnnotations);
+  
+  // Add event listener for annotation clicks using event delegation
+  contentElement.addEventListener('click', handleAnnotationClick);
 }
 
 // Export functions for global access
