@@ -33,5 +33,5 @@ export function highlightRangeWrapper(
   }
   
   // Call the original highlightRange with the HTMLElement
-  return highlightRange(range);
+  return highlightRange(range, tag, cssClass);
 }

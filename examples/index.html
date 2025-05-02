@@ -4,6 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Annotator Library Demo</title>
+    <!-- Import Material Icons from Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
     <style>
       body {
         font-family:
@@ -18,22 +23,56 @@
 
       .button-container {
         display: flex;
+        flex-wrap: wrap;
         gap: 10px;
         margin-bottom: 20px;
       }
 
       button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
         padding: 8px 16px;
-        background-color: #4a90e2;
-        color: white;
-        border: none;
         border-radius: 4px;
+        border: none;
         cursor: pointer;
         font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+      }
+
+      .btn-primary {
+        background-color: #007bff;
+        color: white;
+      }
+
+      .btn-success {
+        background-color: #28a745;
+        color: white;
+      }
+
+      .btn-info {
+        background-color: #17a2b8;
+        color: white;
+      }
+
+      .btn-danger {
+        background-color: #dc3545;
+        color: white;
       }
 
       button:hover {
-        background-color: #3a80d2;
+        opacity: 0.9;
+        transform: translateY(-1px);
+      }
+
+      button:active {
+        transform: translateY(1px);
+      }
+
+      .material-icons {
+        font-size: 18px;
       }
 
       #content {
@@ -105,9 +144,18 @@
     </div>
 
     <div class="button-container">
-      <button id="highlight-btn">Basic Highlighting</button>
-      <button id="annotation-btn">Create Annotation</button>
-      <button id="clear-btn">Clear Annotations</button>
+      <button id="highlight-btn" class="btn btn-primary">
+        <i class="material-icons">highlight</i> Basic Highlighting
+      </button>
+      <button id="annotation-btn" class="btn btn-primary">
+        <i class="material-icons">comment</i> Create Annotation
+      </button>
+      <button id="save-btn" class="btn btn-success">
+        <i class="material-icons">save</i> Save Annotations
+      </button>
+      <button id="clear-btn" class="btn btn-danger">
+        <i class="material-icons">delete</i> Clear Annotations
+      </button>
     </div>
 
     <div id="output">
@@ -123,10 +171,10 @@ Select some text and click "Create Annotation" to see the output here.</pre
 
       // Create an instance of the Annotator class
       const annotator = new Annotator();
-      
+
       // Set a mock document context - can be a string
       annotator.setContext('example-transcription-id');
-      
+
       // Alternatively, context can be an object with any properties
       // Example with an object context:
       // annotator.setContext({
@@ -151,10 +199,24 @@ Select some text and click "Create Annotation" to see the output here.</pre
                 'example-collation-id',
                 'example-transcription-id'
               );
-              
+
+              // Store annotation data in the highlight elements for later retrieval
+              if (annotationWithHighlights.highlights) {
+                annotationWithHighlights.highlights.forEach((highlight) => {
+                  highlight.setAttribute(
+                    'data-annotation-id',
+                    annotationWithHighlights.id
+                  );
+                  highlight.setAttribute(
+                    'data-annotation',
+                    JSON.stringify(annotationWithHighlights)
+                  );
+                });
+              }
+
               // Add custom class to highlights
               if (annotationWithHighlights.highlights) {
-                annotationWithHighlights.highlights.forEach(highlight => {
+                annotationWithHighlights.highlights.forEach((highlight) => {
                   highlight.classList.add('custom-highlight');
                 });
               }
@@ -190,10 +252,10 @@ Select some text and click "Create Annotation" to see the output here.</pre
                 'example-collation-id',
                 'example-transcription-id'
               );
-              
+
               // Add custom class to highlights
               if (annotationWithHighlights.highlights) {
-                annotationWithHighlights.highlights.forEach(highlight => {
+                annotationWithHighlights.highlights.forEach((highlight) => {
                   highlight.classList.add('quote-highlight');
                 });
               }
@@ -219,16 +281,156 @@ Select some text and click "Create Annotation" to see the output here.</pre
 
       // Function to clear all annotations
       function clearAnnotations() {
-        if (window.currentAnnotationIds && window.currentAnnotationIds.length > 0) {
+        if (
+          window.currentAnnotationIds &&
+          window.currentAnnotationIds.length > 0
+        ) {
           // Remove all annotations using the annotator
-          window.currentAnnotationIds.forEach(id => {
+          window.currentAnnotationIds.forEach((id) => {
             annotator.remove(id);
           });
           window.currentAnnotationIds = [];
           document.getElementById('annotation-output').textContent =
             'Select some text and click "Create Annotation" to see the output here.';
+
+          // Clear session storage as well
+          sessionStorage.removeItem('savedAnnotations');
         } else {
           alert('No annotations to clear');
+        }
+      }
+
+      // Function to save annotations to session storage
+      function saveAnnotations() {
+        if (
+          window.currentAnnotationIds &&
+          window.currentAnnotationIds.length > 0
+        ) {
+          // Get all annotations from the annotator
+          const savedAnnotations = [];
+          const processedIds = new Set();
+
+          // First try to find annotations with data-annotation-id attribute
+          window.currentAnnotationIds.forEach((id) => {
+            // Find all highlight elements for this annotation
+            const highlightElements = document.querySelectorAll(
+              `[data-annotation-id="${id}"]`
+            );
+
+            if (highlightElements.length > 0) {
+              // Get the annotation data from the highlight attribute
+              const annotationData =
+                highlightElements[0].getAttribute('data-annotation');
+              if (annotationData) {
+                try {
+                  const annotation = JSON.parse(annotationData);
+                  savedAnnotations.push(annotation);
+                  processedIds.add(id);
+                } catch (e) {
+                  console.error('Error parsing annotation data:', e);
+                }
+              }
+            }
+          });
+
+          // For any IDs not found with data-annotation-id, try to find them with data-id
+          window.currentAnnotationIds.forEach((id) => {
+            if (!processedIds.has(id)) {
+              const highlightElements = document.querySelectorAll(
+                `.highlight[data-id="${id}"]`
+              );
+
+              if (highlightElements.length > 0) {
+                // We need to reconstruct the annotation from the DOM
+                // This is a simplified version - in a real app, you'd want to extract more data
+                const annotation = {
+                  id: id,
+                  collationId: 'example-collation-id',
+                  transcriptionId: 'example-transcription-id',
+                };
+
+                // Add data attributes to the highlight elements for future saves
+                highlightElements.forEach((highlight) => {
+                  highlight.setAttribute('data-annotation-id', id);
+                  highlight.setAttribute(
+                    'data-annotation',
+                    JSON.stringify(annotation)
+                  );
+                });
+
+                savedAnnotations.push(annotation);
+              }
+            }
+          });
+
+          // Save to session storage
+          if (savedAnnotations.length > 0) {
+            sessionStorage.setItem(
+              'savedAnnotations',
+              JSON.stringify(savedAnnotations)
+            );
+            alert(
+              `Saved ${savedAnnotations.length} annotations to session storage`
+            );
+          } else {
+            alert('No annotations to save');
+          }
+        } else {
+          alert('No annotations to save');
+        }
+      }
+
+      // Function to load annotations from session storage
+      function loadSavedAnnotations() {
+        const savedAnnotationsJson = sessionStorage.getItem('savedAnnotations');
+        if (savedAnnotationsJson) {
+          try {
+            const savedAnnotations = JSON.parse(savedAnnotationsJson);
+            if (savedAnnotations && savedAnnotations.length > 0) {
+              console.log(
+                `Loading ${savedAnnotations.length} saved annotations`
+              );
+
+              // Load annotations using the annotator
+              const contentElement = document.getElementById('content');
+              annotator.load(savedAnnotations, contentElement);
+
+              // After loading, we need to add the data attributes to the highlight elements
+              // so they can be saved again later
+              setTimeout(() => {
+                savedAnnotations.forEach((annotation) => {
+                  // Find all highlight elements for this annotation
+                  const highlightElements = document.querySelectorAll(
+                    `[data-annotation-id="${annotation.id}"], .highlight[data-id="${annotation.id}"]`
+                  );
+
+                  // Add data attributes to each highlight element
+                  highlightElements.forEach((highlight) => {
+                    highlight.setAttribute('data-annotation-id', annotation.id);
+                    highlight.setAttribute(
+                      'data-annotation',
+                      JSON.stringify(annotation)
+                    );
+                  });
+                });
+              }, 100); // Small delay to ensure DOM is updated
+
+              // Update the current annotation IDs
+              window.currentAnnotationIds = savedAnnotations.map((a) => a.id);
+
+              // Display the last annotation in the output
+              if (savedAnnotations.length > 0) {
+                document.getElementById('annotation-output').textContent =
+                  JSON.stringify(
+                    savedAnnotations[savedAnnotations.length - 1],
+                    null,
+                    2
+                  );
+              }
+            }
+          } catch (e) {
+            console.error('Error loading saved annotations:', e);
+          }
         }
       }
 
@@ -237,11 +439,12 @@ Select some text and click "Create Annotation" to see the output here.</pre
         // Get the buttons
         const highlightButton = document.getElementById('highlight-btn');
         const annotationButton = document.getElementById('annotation-btn');
+        const saveButton = document.getElementById('save-btn');
         const clearButton = document.getElementById('clear-btn');
 
         // Initialize the annotation IDs array
         window.currentAnnotationIds = [];
-        
+
         // Subscribe to annotator events
         annotator.getEvents().on('highlight', (event) => {
           console.log('Highlight event:', event);
@@ -250,7 +453,11 @@ Select some text and click "Create Annotation" to see the output here.</pre
         // Add event listeners
         highlightButton.addEventListener('click', basicHighlighting);
         annotationButton.addEventListener('click', createAnnotation);
+        saveButton.addEventListener('click', saveAnnotations);
         clearButton.addEventListener('click', clearAnnotations);
+
+        // Load saved annotations when the page loads
+        loadSavedAnnotations();
       });
     </script>
   </body>

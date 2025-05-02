@@ -10,8 +10,8 @@
     "dist"
   ],
   "scripts": {
-    "build": "rollup -c rollup.config.cjs",
-    "dev": "rollup -c rollup.config.cjs -w",
+    "build": "rollup -c rollup.config.mjs",
+    "dev": "rollup -c rollup.config.mjs -w",
     "lint": "eslint 'src/**/*.ts'",
     "lint:fix": "eslint 'src/**/*.ts' --fix",
     "test": "jest",
