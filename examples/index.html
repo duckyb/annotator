@@ -20,90 +20,103 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <h1>Annotator Library Demo</h1>
+    <h1 class="mb-3">Annotator Library Demo</h1>
 
     <div id="content">
-      <h2>Sample Text for Annotation</h2>
+      <h3 class="mb-3">The history of Darth Plagueis</h3>
       <p>
-        Four score and seven years ago our fathers brought forth on this
-        continent, a new nation, conceived in Liberty, and dedicated to the
-        proposition that all men are created equal.
+        Did you ever hear the tragedy of Darth Plagueis The Wise? I thought not.
+        It's not a story the Jedi would tell you. It's a Sith legend.
       </p>
       <p>
-        Now we are engaged in a great civil war, testing whether that nation, or
-        any nation so conceived and so dedicated, can long endure. We are met on
-        a great battle-field of that war. We have come to dedicate a portion of
-        that field, as a final resting place for those who here gave their lives
-        that that nation might live. It is altogether fitting and proper that we
-        should do this.
+        Darth Plagueis was a Dark Lord of the Sith, so powerful and so wise he
+        could use the Force to influence the midichlorians to create life… He
+        had such a knowledge of the dark side that he could even keep the ones
+        he cared about from dying. The dark side of the Force is a pathway to
+        many abilities some consider to be unnatural.
       </p>
       <p>
-        But, in a larger sense, we can not dedicate -- we can not consecrate --
-        we can not hallow -- this ground. The brave men, living and dead, who
-        struggled here, have consecrated it, far above our poor power to add or
-        detract. The world will little note, nor long remember what we say here,
-        but it can never forget what they did here. It is for us the living,
-        rather, to be dedicated here to the unfinished work which they who
-        fought here have thus far so nobly advanced.
+        He became so powerful… the only thing he was afraid of was losing his
+        power, which eventually, of course, he did. Unfortunately, he taught his
+        apprentice everything he knew, then his apprentice killed him in his
+        sleep. Ironic. He could save others from death, but not himself.
       </p>
+      <p class="attribution">- Sheev Palpatine or Darth Sidious</p>
     </div>
 
     <div class="color-selector">
-      <h3>Highlight Color</h3>
-      <div class="color-circles">
-        <label class="color-circle-label">
-          <input type="radio" name="highlight-color" value="#FFFF00" checked />
-          <span
-            class="color-circle"
-            style="background-color: rgba(255, 255, 0, 0.7)"
-          ></span>
-        </label>
-        <label class="color-circle-label">
-          <input type="radio" name="highlight-color" value="#90EE90" />
-          <span
-            class="color-circle"
-            style="background-color: rgba(144, 238, 144, 0.7)"
-          ></span>
-        </label>
-        <label class="color-circle-label">
-          <input type="radio" name="highlight-color" value="#ADD8E6" />
-          <span
-            class="color-circle"
-            style="background-color: rgba(173, 216, 230, 0.7)"
-          ></span>
-        </label>
-        <label class="color-circle-label">
-          <input type="radio" name="highlight-color" value="#FFB6C1" />
-          <span
-            class="color-circle"
-            style="background-color: rgba(255, 182, 193, 0.7)"
-          ></span>
-        </label>
-        <label class="color-circle-label">
-          <input
-            type="color"
-            id="custom-color"
-            value="#FFFF00"
-            style="display: none"
-          />
-          <span
-            class="color-circle custom"
-            style="
-              background: linear-gradient(
-                135deg,
-                #fff 0%,
-                #fff 25%,
-                #f0f 25%,
-                #f0f 50%,
-                #0ff 50%,
-                #0ff 75%,
-                #ff0 75%,
-                #ff0 100%
-              );
-            "
-          ></span>
-        </label>
+      <div class="color-selector-container">
+        <span class="color-label">Highlight Color:</span>
+        <div class="color-circles">
+          <label class="color-circle-label">
+            <input
+              type="radio"
+              name="highlight-color"
+              value="#FFFF00"
+              checked
+            />
+            <span
+              class="color-circle"
+              style="background-color: rgba(255, 255, 0, 0.7)"
+            ></span>
+          </label>
+          <label class="color-circle-label">
+            <input type="radio" name="highlight-color" value="#90EE90" />
+            <span
+              class="color-circle"
+              style="background-color: rgba(144, 238, 144, 0.7)"
+            ></span>
+          </label>
+          <label class="color-circle-label">
+            <input type="radio" name="highlight-color" value="#ADD8E6" />
+            <span
+              class="color-circle"
+              style="background-color: rgba(173, 216, 230, 0.7)"
+            ></span>
+          </label>
+          <label class="color-circle-label">
+            <input type="radio" name="highlight-color" value="#FFB6C1" />
+            <span
+              class="color-circle"
+              style="background-color: rgba(255, 182, 193, 0.7)"
+            ></span>
+          </label>
+          <label class="color-circle-label">
+            <input
+              type="color"
+              id="custom-color"
+              value="#FFFF00"
+              style="display: none"
+            />
+            <span
+              class="color-circle custom"
+              style="
+                background: linear-gradient(
+                  135deg,
+                  #fff 0%,
+                  #fff 25%,
+                  #f0f 25%,
+                  #f0f 50%,
+                  #0ff 50%,
+                  #0ff 75%,
+                  #ff0 75%,
+                  #ff0 100%
+                );
+              "
+            ></span>
+          </label>
+        </div>
       </div>
+    </div>
+
+    <div class="comment-container">
+      <label for="annotation-comment" class="comment-label">Comment:</label>
+      <textarea
+        id="annotation-comment"
+        class="form-control"
+        placeholder="Add your comment here..."
+        rows="2"
+      ></textarea>
     </div>
 
     <div class="button-container">

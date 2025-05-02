@@ -57,6 +57,24 @@ function createAnnotation() {
         // Get the selected color
         const selectedColor = getSelectedColor();
 
+        // Get the user's comment from the textarea
+        const commentText = document
+          .getElementById('annotation-comment')
+          .value.trim();
+
+        // Create metadata object
+        const metadata = {
+          type: 'annotation',
+          createdAt: new Date().toISOString(),
+          createdBy: 'demo-user',
+          tags: ['important', 'review'],
+        };
+        
+        // Only add comment to metadata if one was provided
+        if (commentText) {
+          metadata.comment = commentText;
+        }
+        
         // Create a full annotation using the annotator
         const annotationWithHighlights = annotator.createAnnotation({
           root: contentElement,
@@ -66,13 +84,7 @@ function createAnnotation() {
           },
           // Pass the color directly to the createAnnotation method
           color: selectedColor,
-          metadata: {
-            type: 'annotation',
-            createdAt: new Date().toISOString(),
-            createdBy: 'demo-user',
-            comment: 'This is an important passage',
-            tags: ['important', 'review'],
-          },
+          metadata: metadata,
         });
 
         // Add the highlights to the page
@@ -109,6 +121,9 @@ function createAnnotation() {
 
         // Clear the selection
         selection.removeAllRanges();
+
+        // Clear the comment field for the next annotation
+        document.getElementById('annotation-comment').value = '';
       } catch (e) {
         console.error('Error creating annotation:', e);
 
@@ -221,13 +236,17 @@ function loadSavedAnnotations() {
           try {
             // Make sure the annotation has the color property directly on the object
             // This ensures compatibility with the new approach
-            if (annotation.metadata && annotation.metadata.color && !annotation.color) {
+            if (
+              annotation.metadata &&
+              annotation.metadata.color &&
+              !annotation.color
+            ) {
               annotation.color = annotation.metadata.color;
             }
-            
+
             // Add the annotation ID to the list
             window.currentAnnotationIds.push(annotation.id);
-            
+
             // Add the annotation to the page
             const highlights = annotator.addHighlights(
               document.getElementById('content'),
@@ -261,7 +280,7 @@ function loadSavedAnnotations() {
     }
   } catch (e) {
     console.error('Error loading saved annotations:', e);
-    
+
     // Show error notification
     showNotification(
       'Error loading annotations: ' + e.message,
@@ -351,38 +370,52 @@ function setupColorPicker() {
 // Function to display annotation data in the preview box
 function displayAnnotationData(annotation) {
   const outputElement = document.getElementById('annotation-output');
-  
+
   // Display the annotation as formatted JSON, matching the format used when creating annotations
   outputElement.textContent = JSON.stringify(annotation, null, 2);
+  
+  // Update the comment field if it exists in the annotation's metadata
+  const commentField = document.getElementById('annotation-comment');
+  if (commentField) {
+    if (annotation.metadata && annotation.metadata.comment) {
+      commentField.value = annotation.metadata.comment;
+    } else {
+      commentField.value = '';
+    }
+  }
 }
 
 // Function to handle clicks on annotation highlights
 function handleAnnotationClick(event) {
   // Check if the clicked element or any of its parents is a highlight
   let target = event.target;
-  
+
   // Traverse up the DOM to find a highlight element with annotation data
   while (target && target !== document) {
     if (target.hasAttribute('data-annotation')) {
       // Get the annotation data
       try {
-        const annotationData = JSON.parse(target.getAttribute('data-annotation'));
-        
+        const annotationData = JSON.parse(
+          target.getAttribute('data-annotation')
+        );
+
         // Display the annotation data
         displayAnnotationData(annotationData);
-        
+
         // Add a visual indication that this highlight is selected
         // Remove 'selected' class from all highlights
-        document.querySelectorAll('[data-annotation-id]').forEach(el => {
+        document.querySelectorAll('[data-annotation-id]').forEach((el) => {
           el.classList.remove('selected-highlight');
         });
-        
+
         // Add 'selected' class to the clicked highlight and its siblings with the same ID
         const annotationId = target.getAttribute('data-annotation-id');
-        document.querySelectorAll(`[data-annotation-id="${annotationId}"]`).forEach(el => {
-          el.classList.add('selected-highlight');
-        });
-        
+        document
+          .querySelectorAll(`[data-annotation-id="${annotationId}"]`)
+          .forEach((el) => {
+            el.classList.add('selected-highlight');
+          });
+
         // Stop event propagation
         event.stopPropagation();
         return;
@@ -390,7 +423,7 @@ function handleAnnotationClick(event) {
         console.error('Error parsing annotation data:', e);
       }
     }
-    
+
     // Move up to the parent element
     target = target.parentElement;
   }
@@ -416,7 +449,7 @@ function setupEventListeners() {
   annotationButton.addEventListener('click', createAnnotation);
   saveButton.addEventListener('click', saveAnnotations);
   clearButton.addEventListener('click', clearAnnotations);
-  
+
   // Add event listener for annotation clicks using event delegation
   contentElement.addEventListener('click', handleAnnotationClick);
 }
