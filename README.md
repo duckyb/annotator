@@ -31,7 +31,7 @@ yarn add @net7/annotator
 
 ### Creating a Highlight Annotation
 
-````typescript
+```typescript
 import { Annotator } from '@net7/annotator';
 
 // --- Example function to create annotation from user selection ---
@@ -59,7 +59,7 @@ function createAnnotationFromSelection() {
     createdBy: 'user@example.com',
     tags: ['important', 'review'],
     comment: 'This section needs review',
-    likes: 0
+    likes: 0,
   };
   // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 
@@ -69,14 +69,13 @@ function createAnnotationFromSelection() {
       root: rootElement,
       range: range,
       context: context,
-      metadata: metadata
+      metadata: metadata,
     });
     console.log('Annotation created:', result.annotation);
     console.log('Highlight elements:', result.highlights);
 
     // Optional: Clear the browser selection highlight
     selection.removeAllRanges();
-
   } catch (error) {
     console.error('Error creating annotation:', error);
     // Handle cases where the range might be invalid, etc.
@@ -135,7 +134,7 @@ yarn build
 
 # Run tests
 yarn test
-````
+```
 
 ## License
 
