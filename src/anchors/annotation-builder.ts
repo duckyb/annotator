@@ -15,14 +15,19 @@ export class AnnotationBuilder {
 
   /**
    * Creates an annotation from a user selection
+   * @param params Object containing the parameters for creating an annotation
+   * @param params.root The root element containing the selection
+   * @param params.range The selected range
+   * @param params.context The context object for the annotation
+   * @returns A new annotation object
    */
-  createAnnotation(
-    root: HTMLElement,
-    range: Range,
-    collationId: string,
-    transcriptionId: string,
-    nodeId?: string
-  ): Annotation {
+  createAnnotation(params: {
+    root: HTMLElement;
+    range: Range;
+    context: Record<string, unknown>;
+  }): Annotation {
+    const { root, range, context } = params;
+
     // Create different types of anchors from the range
     const rangeAnchor = new RangeAnchor(root, range);
     const rangeSelector = rangeAnchor.toSelector();
@@ -94,9 +99,7 @@ export class AnnotationBuilder {
 
     return {
       id: generateRandomId(),
-      collationId,
-      transcriptionId,
-      nodeId,
+      context,
       serializedBy: '',
       rangeSelector,
       textPositionSelector,

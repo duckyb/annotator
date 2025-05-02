@@ -200,28 +200,25 @@ export class Annotator {
 
   /**
    * Create an annotation from a range
-   * @param root The root element
-   * @param range The range to create an annotation from
-   * @param collationId The collation ID
-   * @param transcriptionId The transcription ID
-   * @param nodeId Optional node ID
+   * @param params Object containing the parameters for creating an annotation
+   * @param params.root The root element
+   * @param params.range The range to create an annotation from
+   * @param params.context The context object for the annotation
    * @returns The created annotation with highlights
    */
-  createAnnotation(
-    root: HTMLElement,
-    range: Range,
-    collationId: string,
-    transcriptionId: string,
-    nodeId?: string
-  ): AnnotationWithHighlights {
+  createAnnotation(params: {
+    root: HTMLElement;
+    range: Range;
+    context: Record<string, unknown>;
+  }): AnnotationWithHighlights {
+    const { root, range, context } = params;
+    
     // Create the annotation using the builder
-    const annotation = this.annotationBuilder.createAnnotation(
+    const annotation = this.annotationBuilder.createAnnotation({
       root,
       range,
-      collationId,
-      transcriptionId,
-      nodeId
-    );
+      context
+    });
 
     // Add highlights
     const highlights = this.addHighlights(root, annotation);
@@ -380,26 +377,16 @@ export class Annotator {
       return false;
     }
 
-    // If context is a string, compare with transcriptionId
+    // If context is a string, look for it in the annotation context
     if (typeof this.currentContext === 'string') {
-      return annotation.transcriptionId === this.currentContext;
+      // Check if any context property matches the string
+      return Object.values(annotation.context).includes(this.currentContext);
     }
     
-    // If context is an object with transcriptionId property
+    // If context is an object, check if all properties in currentContext match in annotation.context
     const contextObj = this.currentContext as Record<string, unknown>;
-    if (typeof contextObj.transcriptionId === 'string') {
-      return (
-        annotation.transcriptionId === contextObj.transcriptionId &&
-        (!annotation.nodeId ||
-          !contextObj.nodeId ||
-          annotation.nodeId === contextObj.nodeId)
-      );
-    }
-    
-    // For other context objects, use JSON.stringify for comparison
-    return JSON.stringify(this.currentContext) === JSON.stringify({
-      transcriptionId: annotation.transcriptionId,
-      nodeId: annotation.nodeId
+    return Object.entries(contextObj).every(([key, value]) => {
+      return annotation.context[key] === value;
     });
   }
 }

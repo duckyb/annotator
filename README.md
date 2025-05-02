@@ -22,66 +22,60 @@ The library is completely framework-agnostic and can be used with any JavaScript
 ## Installation
 
 ```bash
-npm install @h2iosc/annotator
+npm install @net7/annotator
 # or
-yarn add @h2iosc/annotator
+yarn add @net7/annotator
 ```
 
 ## Usage Examples
 
-### Basic Highlighting
+### Creating a Highlight Annotation
 
-```typescript
-import { highlightRange } from '@h2iosc/annotator';
+````typescript
+import { Annotator } from '@net7/annotator';
 
-// Create a highlight
-const range = document.createRange();
-range.selectNodeContents(document.getElementById('content'));
-const highlights = highlightRange(range, 'span', 'custom-highlight');
-```
+// --- Example function to create annotation from user selection ---
+function createAnnotationFromSelection() {
+  const selection = window.getSelection();
+  if (!selection || selection.rangeCount === 0) {
+    console.log('No text selected.');
+    return;
+  }
 
-### Removing Highlights
+  const range = selection.getRangeAt(0);
 
-```typescript
-import { removeHighlights } from '@h2iosc/annotator';
+  // --- Provide necessary details (replace with your application's logic) ---
+  const rootElement = document.body; // Or your specific content root
 
-// Remove highlights
-removeHighlights(highlights);
-```
+  // Define your annotation context with properties relevant to your application
+  const context = {
+    documentId: 'doc-123',
+    pageNumber: 5,
+    // Add any other context properties needed for your application
+  };
+  // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 
-### Creating Annotations with Different Selectors
+  try {
+    // Create the annotation data and initial highlights
+    const result = annotator.createAnnotation({
+      root: rootElement,
+      range: range,
+      context: context
+    });
+    console.log('Annotation created:', result.annotation);
+    console.log('Highlight elements:', result.highlights);
 
-```typescript
-import { 
-  TextQuoteAnchor, 
-  TextPositionAnchor, 
-  RangeAnchor 
-} from '@h2iosc/annotator';
+    // Optional: Clear the browser selection highlight
+    selection.removeAllRanges();
 
-// Text quote-based annotation
-const quoteAnchor = new TextQuoteAnchor(
-  document.body,
-  'exact text to match',
-  'prefix context',
-  'suffix context'
-);
+  } catch (error) {
+    console.error('Error creating annotation:', error);
+    // Handle cases where the range might be invalid, etc.
+  }
+}
 
-// Text position-based annotation
-const positionAnchor = new TextPositionAnchor(
-  document.body,
-  42,  // start position
-  56   // end position
-);
-
-// Range-based annotation
-const rangeAnchor = new RangeAnchor(
-  document.body,
-  'xpath/to/start/container',
-  5,  // start offset
-  'xpath/to/end/container',
-  10  // end offset
-);
-```
+// Example usage: Call this function when a user clicks a button, for example.
+// createAnnotationFromSelection();
 
 ## API Documentation
 
@@ -131,7 +125,7 @@ yarn build
 
 # Run tests
 yarn test
-```
+````
 
 ## License
 

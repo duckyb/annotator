@@ -1,5 +1,5 @@
 {
-  "name": "annotator",
+  "name": "@net7/annotator",
   "version": "1.0.0",
   "description": "Anchoring and highlighting library for web documents",
   "main": "dist/index.js",

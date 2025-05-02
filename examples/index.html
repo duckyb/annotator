@@ -167,19 +167,19 @@ Select some text and click "Create Annotation" to see the output here.</pre
 
     <script type="module">
       // Import from your bundled library
-      import { Annotator } from './dist/index.esm.js';
+      import { Annotator } from '../dist/index.esm.js';
 
       // Create an instance of the Annotator class
       const annotator = new Annotator();
 
       // Set a mock document context - can be a string
-      annotator.setContext('example-transcription-id');
+      annotator.setContext('annotator-demo');
 
       // Alternatively, context can be an object with any properties
       // Example with an object context:
       // annotator.setContext({
-      //   transcriptionId: 'example-transcription-id',
-      //   nodeId: 'page-1',
+      //   documentId: 'annotator-demo',
+      //   pageNumber: 1,
       //   customProperty: 'custom-value'
       // });
 
@@ -193,12 +193,13 @@ Select some text and click "Create Annotation" to see the output here.</pre
           if (!range.collapsed) {
             try {
               // Create a mock annotation using the annotator
-              const annotationWithHighlights = annotator.createAnnotation(
-                contentElement,
-                range,
-                'example-collation-id',
-                'example-transcription-id'
-              );
+              const annotationWithHighlights = annotator.createAnnotation({
+                root: contentElement,
+                range: range,
+                context: {
+                  documentId: 'annotator-demo',
+                },
+              });
 
               // Store annotation data in the highlight elements for later retrieval
               if (annotationWithHighlights.highlights) {
@@ -246,12 +247,13 @@ Select some text and click "Create Annotation" to see the output here.</pre
           if (!range.collapsed) {
             try {
               // Create a full annotation using the annotator
-              const annotationWithHighlights = annotator.createAnnotation(
-                contentElement,
-                range,
-                'example-collation-id',
-                'example-transcription-id'
-              );
+              const annotationWithHighlights = annotator.createAnnotation({
+                root: contentElement,
+                range: range,
+                context: {
+                  documentId: 'annotator-demo',
+                },
+              });
 
               // Add custom class to highlights
               if (annotationWithHighlights.highlights) {
@@ -345,8 +347,10 @@ Select some text and click "Create Annotation" to see the output here.</pre
                 // This is a simplified version - in a real app, you'd want to extract more data
                 const annotation = {
                   id: id,
-                  collationId: 'example-collation-id',
-                  transcriptionId: 'example-transcription-id',
+                  context: {
+                    documentId: 'annotator-demo',
+                  },
+                  serializedBy: 'annotator-demo',
                 };
 
                 // Add data attributes to the highlight elements for future saves
