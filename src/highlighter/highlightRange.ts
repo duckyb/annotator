@@ -1,6 +1,7 @@
 import type { HighlightElement } from './types';
 import { drawHighlightsAbovePdfCanvas } from './drawHighlightsAbovePdfCanvas';
 import { wholeTextNodesInRange } from './wholeTextNodesInRange';
+import { hexToRgba, getDarkerColor } from '../utils/color-utils';
 
 /**
  * Wraps the DOM Nodes within the provided range with a highlight
@@ -9,12 +10,14 @@ import { wholeTextNodesInRange } from './wholeTextNodesInRange';
  * @param {Range} range - Range to be highlighted
  * @param {string} tag - HTML tag to use for the highlight element
  * @param {string} cssClass - A CSS class to use for the highlight
+ * @param {string} color - Optional hex color code for the highlight
  * @return {HighlightElement[]} - Elements wrapping text in range to add a highlight effect
  */
 export function highlightRange(
   range: Range,
   tag = 'span',
-  cssClass = 'highlight'
+  cssClass = 'highlight',
+  color?: string
 ): HighlightElement[] {
   const textNodes = wholeTextNodesInRange(range);
 
@@ -60,6 +63,16 @@ export function highlightRange(
     const highlightEl = document.createElement(tag) as HighlightElement;
     highlightEl.className = cssClass;
     highlightEl.setAttribute('part', cssClass);
+    
+    // Apply inline styles if a color is provided
+    if (color) {
+      const backgroundColor = hexToRgba(color);
+      const borderColor = getDarkerColor(color);
+      
+      highlightEl.style.backgroundColor = backgroundColor;
+      highlightEl.style.borderBottom = `1px dashed ${borderColor}`;
+      highlightEl.setAttribute('data-highlight-color', color);
+    }
 
     nodes[0].parentNode?.replaceChild(highlightEl, nodes[0]);
     nodes.forEach((node) => highlightEl.appendChild(node));

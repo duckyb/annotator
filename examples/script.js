@@ -75,44 +75,9 @@ function createAnnotation() {
           },
         });
 
-        // Apply custom color styling to highlights
+        // Add the highlights to the page
         if (annotationWithHighlights.highlights) {
-          // Get the color directly from the annotation object, default to yellow if undefined
-          const color = annotationWithHighlights.color || '#FFFF00';
-          
-          // Convert hex color to rgba with opacity
-          const hexColor = color.replace('#', '');
-          const r = parseInt(hexColor.substring(0, 2), 16);
-          const g = parseInt(hexColor.substring(2, 4), 16);
-          const b = parseInt(hexColor.substring(4, 6), 16);
-
-          // Use higher opacity for more vibrant colors
-          const backgroundColor = `rgba(${r}, ${g}, ${b}, 0.3)`;
-
-          // Create border colors based on the original colors
-          let borderColor;
-          if (color === '#FFFF00') {
-            borderColor = '#e6c700'; // Yellow border
-          } else if (color === '#90EE90') {
-            borderColor = '#4caf50'; // Green border
-          } else if (color === '#ADD8E6') {
-            borderColor = '#2196f3'; // Blue border
-          } else if (color === '#FFB6C1') {
-            borderColor = '#e91e63'; // Pink border
-          } else {
-            // For custom colors, use a darker version of the same color
-            borderColor = `rgba(${Math.max(0, r - 40)}, ${Math.max(0, g - 40)}, ${Math.max(0, b - 40)}, 0.7}`;
-          }
-
-          // Apply the color to each highlight element
           annotationWithHighlights.highlights.forEach((highlight) => {
-            // Remove any existing highlight class
-            highlight.classList.remove('highlight');
-
-            // Apply inline styles for the highlight color
-            highlight.style.backgroundColor = backgroundColor;
-            highlight.style.borderBottom = `1px dashed ${borderColor}`;
-
             // Add the annotation ID as a data attribute
             highlight.setAttribute(
               'data-annotation-id',
@@ -279,41 +244,6 @@ function loadSavedAnnotations() {
                   'data-annotation',
                   JSON.stringify(annotation)
                 );
-
-                // Remove any existing highlight class
-                highlight.classList.remove('highlight');
-
-                // Get the color from the annotation, default to yellow if undefined
-                const color = annotation.color || '#FFFF00';
-                
-                // Convert hex color to rgba with opacity
-                const hexColor = color.replace('#', '');
-                const r = parseInt(hexColor.substring(0, 2), 16);
-                const g = parseInt(hexColor.substring(2, 4), 16);
-                const b = parseInt(hexColor.substring(4, 6), 16);
-                const backgroundColor = `rgba(${r}, ${g}, ${b}, 0.3)`;
-
-                // Create border colors based on the original colors
-                let borderColor;
-                if (color === '#FFFF00') {
-                  borderColor = '#e6c700'; // Yellow border
-                } else if (color === '#90EE90') {
-                  borderColor = '#4caf50'; // Green border
-                } else if (color === '#ADD8E6') {
-                  borderColor = '#2196f3'; // Blue border
-                } else if (color === '#FFB6C1') {
-                  borderColor = '#e91e63'; // Pink border
-                } else {
-                  // For custom colors, use a darker version of the same color
-                  borderColor = `rgba(${Math.max(0, r - 40)}, ${Math.max(0, g - 40)}, ${Math.max(0, b - 40)}, 0.7}`;
-                }
-                
-                // Apply inline styles - make sure to set them directly
-                highlight.style.backgroundColor = backgroundColor;
-                highlight.style.borderBottom = `1px dashed ${borderColor}`;
-                
-                // Store the color in a data attribute for future reference
-                highlight.setAttribute('data-highlight-color', color);
               });
             }
           } catch (e) {

@@ -298,7 +298,8 @@ export class Annotator {
         return [];
       }
       // Use the wrapper function to handle the Range to HTMLElement conversion
-      const highlights = highlightRangeWrapper(range);
+      // Pass the annotation color to use for highlighting
+      const highlights = highlightRangeWrapper(range, 'span', 'highlight', annotation.color);
       if (highlights && highlights.length) {
         this.highlights.set(annotation.id, highlights);
         this.highlightManager.attachEvents(highlights, annotation.id);
