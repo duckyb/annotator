@@ -144,9 +144,7 @@ function saveAnnotations() {
     window.currentAnnotationIds.forEach((annotationId) => {
       const annotation = window.annotationsMap[annotationId];
       if (annotation) {
-        // Create a clean version of the annotation without DOM elements
-        const cleanAnnotation = createCleanAnnotationData(annotation);
-        annotations.push(cleanAnnotation);
+        annotations.push(annotation);
       }
     });
   }
@@ -351,44 +349,6 @@ function handleAnnotationClick(event) {
     // Move up to the parent element
     target = target.parentElement;
   }
-}
-
-// Function to create a clean version of the annotation data without DOM elements
-function createCleanAnnotationData(annotation) {
-  // Create a new object with only the serializable properties
-  const cleanAnnotation = {
-    id: annotation.id,
-    context: annotation.context,
-    serializedBy: annotation.serializedBy,
-    color: annotation.color,
-  };
-
-  // Include metadata if it exists
-  if (annotation.metadata) {
-    cleanAnnotation.metadata = { ...annotation.metadata };
-  }
-
-  // If there are text selectors, include them
-  if (annotation.rangeSelector) {
-    cleanAnnotation.rangeSelector = annotation.rangeSelector;
-  }
-
-  if (annotation.textPositionSelector) {
-    cleanAnnotation.textPositionSelector = annotation.textPositionSelector;
-  }
-
-  if (annotation.textQuoteSelector) {
-    cleanAnnotation.textQuoteSelector = annotation.textQuoteSelector;
-  }
-
-  // Add highlight count instead of the actual DOM elements
-  if (annotation.highlights && Array.isArray(annotation.highlights)) {
-    cleanAnnotation.highlightCount = annotation.highlights.length;
-  } else {
-    cleanAnnotation.highlightCount = 0;
-  }
-
-  return cleanAnnotation;
 }
 
 // Function to set up event listeners for buttons
