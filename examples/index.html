@@ -199,6 +199,11 @@ Select some text and click "Create Annotation" to see the output here.</pre
                 context: {
                   documentId: 'annotator-demo',
                 },
+                metadata: {
+                  type: 'highlight',
+                  createdAt: new Date().toISOString(),
+                  createdBy: 'demo-user'
+                }
               });
 
               // Store annotation data in the highlight elements for later retrieval
@@ -253,6 +258,13 @@ Select some text and click "Create Annotation" to see the output here.</pre
                 context: {
                   documentId: 'annotator-demo',
                 },
+                metadata: {
+                  type: 'annotation',
+                  createdAt: new Date().toISOString(),
+                  createdBy: 'demo-user',
+                  comment: 'This is an important passage',
+                  tags: ['important', 'review']
+                }
               });
 
               // Add custom class to highlights

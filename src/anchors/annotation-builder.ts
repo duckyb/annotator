@@ -19,12 +19,14 @@ export class AnnotationBuilder {
    * @param params.root The root element containing the selection
    * @param params.range The selected range
    * @param params.context The context object for the annotation
+   * @param params.metadata Optional custom data to include with the annotation
    * @returns A new annotation object
    */
   createAnnotation(params: {
     root: HTMLElement;
     range: Range;
     context: Record<string, unknown>;
+    metadata?: Record<string, unknown>;
   }): Annotation {
     const { root, range, context } = params;
 
@@ -101,6 +103,7 @@ export class AnnotationBuilder {
       id: generateRandomId(),
       context,
       serializedBy: '',
+      metadata: params.metadata,
       rangeSelector,
       textPositionSelector,
       textQuoteSelector,

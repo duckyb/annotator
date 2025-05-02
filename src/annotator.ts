@@ -204,20 +204,23 @@ export class Annotator {
    * @param params.root The root element
    * @param params.range The range to create an annotation from
    * @param params.context The context object for the annotation
+   * @param params.metadata Optional custom data to include with the annotation
    * @returns The created annotation with highlights
    */
   createAnnotation(params: {
     root: HTMLElement;
     range: Range;
     context: Record<string, unknown>;
+    metadata?: Record<string, unknown>;
   }): AnnotationWithHighlights {
-    const { root, range, context } = params;
+    const { root, range, context, metadata } = params;
     
     // Create the annotation using the builder
     const annotation = this.annotationBuilder.createAnnotation({
       root,
       range,
-      context
+      context,
+      metadata
     });
 
     // Add highlights

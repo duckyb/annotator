@@ -53,6 +53,14 @@ function createAnnotationFromSelection() {
     pageNumber: 5,
     // Add any other context properties needed for your application
   };
+  
+  // Define custom metadata for this annotation
+  const metadata = {
+    createdBy: 'user@example.com',
+    tags: ['important', 'review'],
+    comment: 'This section needs review',
+    likes: 0
+  };
   // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 
   try {
@@ -60,7 +68,8 @@ function createAnnotationFromSelection() {
     const result = annotator.createAnnotation({
       root: rootElement,
       range: range,
-      context: context
+      context: context,
+      metadata: metadata
     });
     console.log('Annotation created:', result.annotation);
     console.log('Highlight elements:', result.highlights);

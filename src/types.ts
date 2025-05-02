@@ -13,6 +13,7 @@ export interface Annotation {
   serializedBy: string;
   // subject: WebPage;
   color?: string;
+  metadata?: Record<string, unknown>; // Custom user data
   rangeSelector?: RangeSelectorWithType;
   textPositionSelector?: TextPositionSelectorWithType;
   textQuoteSelector?: TextQuoteSelectorWithType;
