@@ -13,8 +13,10 @@ document.addEventListener('DOMContentLoaded', initializeAnnotator);
 
 // Function to initialize the annotator and set up the page
 function initializeAnnotator() {
-  // Create a new instance of the Annotator
-  annotator = new Annotator();
+  // Create a new instance of the Annotator with whitespace highlighting enabled
+  annotator = new Annotator({
+    allowWhitespace: true // Enable whitespace highlighting for testing
+  });
 
   // Set the context for the annotator
   annotator.setContext({
