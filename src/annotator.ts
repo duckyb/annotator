@@ -2,11 +2,11 @@
  * Main entry point for the Annotator library.
  * Provides a framework-agnostic API for creating, managing, and interacting with annotations.
  */
-import type { 
-  Annotation, 
-  AnnotationWithHighlights, 
+import type {
+  Annotation,
+  AnnotationWithHighlights,
   DocumentContext,
-  EventEmitterInterface
+  EventEmitterInterface,
 } from './types';
 import type { HighlightElement } from './highlighter/types';
 import { highlightRangeWrapper } from './highlighter/highlightRangeWrapper';
@@ -30,17 +30,27 @@ export class Annotator {
   private events: EventEmitterInterface;
   private annotationBuilder: AnnotationBuilder;
   private highlightManager: HighlightManager;
+  private options: {
+    allowWhitespace: boolean;
+  };
 
   /**
    * Creates a new Annotator instance
+   * @param options Configuration options for the annotator
+   * @param options.allowWhitespace Whether to allow highlighting of whitespace-only text nodes (default: false)
    */
-  constructor() {
+  constructor(options?: { allowWhitespace?: boolean }) {
     this.events = new EventEmitter();
     const textProcessor = new TextProcessor();
     this.annotationBuilder = new AnnotationBuilder(textProcessor);
     this.highlightManager = new HighlightManager();
     this.currentContext = null;
-    
+
+    // Set default options
+    this.options = {
+      allowWhitespace: options?.allowWhitespace ?? false,
+    };
+
     // Forward highlight manager events to the annotator events
     this.highlightManager.events$.subscribe((event) => {
       this.events.emit('highlight', {
@@ -72,6 +82,25 @@ export class Annotator {
    */
   getContext(): DocumentContext | null {
     return this.currentContext;
+  }
+
+  /**
+   * Configure the annotator options
+   * @param options The options to set
+   * @param options.allowWhitespace Whether to allow highlighting of whitespace-only text nodes
+   */
+  configure(options: { allowWhitespace?: boolean }): void {
+    if (options.allowWhitespace !== undefined) {
+      this.options.allowWhitespace = options.allowWhitespace;
+    }
+  }
+
+  /**
+   * Get the current configuration options
+   * @returns The current configuration options
+   */
+  getOptions(): { allowWhitespace: boolean } {
+    return { ...this.options };
   }
 
   /**
@@ -216,15 +245,15 @@ export class Annotator {
     metadata?: Record<string, unknown>;
   }): AnnotationWithHighlights {
     const { root, range, context, color, metadata } = params;
-    
+
     // Create the annotation using the builder
     const annotation = this.annotationBuilder.createAnnotation({
       root,
       range,
       context,
-      metadata
+      metadata,
     });
-    
+
     // Add the color property, default to yellow if not provided
     annotation.color = color || '#FFFF00';
 
@@ -298,8 +327,13 @@ export class Annotator {
         return [];
       }
       // Use the wrapper function to handle the Range to HTMLElement conversion
-      // Pass the annotation color to use for highlighting
-      const highlights = highlightRangeWrapper(range, 'span', 'highlight', annotation.color);
+      const highlights = highlightRangeWrapper({
+        range,
+        tag: 'span',
+        cssClass: 'highlight',
+        color: annotation.color,
+        allowWhitespace: this.options.allowWhitespace,
+      });
       if (highlights && highlights.length) {
         this.highlights.set(annotation.id, highlights);
         this.highlightManager.attachEvents(highlights, annotation.id);
@@ -391,7 +425,7 @@ export class Annotator {
       // Check if any context property matches the string
       return Object.values(annotation.context).includes(this.currentContext);
     }
-    
+
     // If context is an object, check if all properties in currentContext match in annotation.context
     const contextObj = this.currentContext as Record<string, unknown>;
     return Object.entries(contextObj).every(([key, value]) => {
