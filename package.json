@@ -10,8 +10,9 @@
     "dist"
   ],
   "scripts": {
+    "start": "concurrently -n ROLLUP,BS \"rollup -c rollup.config.mjs -w\" \"browser-sync start --server --no-notify --no-open --files 'examples/*, dist/*.js' --startPath /examples\"",
+    "dev": "yarn build && concurrently -k -n ROLLUP,BS -c 'bgBlue.bold,bgGreen.bold' \"yarn build --watch\" \"wait-on dist/index.js && browser-sync start --server --no-notify --files 'examples/*, dist/*.js' --startPath /examples\"",
     "build": "rollup -c rollup.config.mjs",
-    "dev": "rollup -c rollup.config.mjs -w",
     "lint": "eslint 'src/**/*.ts'",
     "lint:fix": "eslint 'src/**/*.ts' --fix",
     "test": "jest",
@@ -26,8 +27,11 @@
     "@rollup/plugin-node-resolve": "^15.0.0",
     "@rollup/plugin-typescript": "^11.0.0",
     "@types/jest": "^29.5.0",
+    "browser-sync": "^3.0.4",
+    "concurrently": "^9.1.2",
     "eslint": "^9.24.0",
     "eslint-config-prettier": "^10.1.1",
+    "http-server": "^14.1.1",
     "jest": "^29.5.0",
     "prettier": "^3.5.3",
     "rollup": "^3.0.0",
@@ -35,7 +39,8 @@
     "ts-jest": "^29.1.0",
     "tslib": "^2.0.0",
     "typescript": "^5.0.0",
-    "typescript-eslint": "^8.29.1"
+    "typescript-eslint": "^8.29.1",
+    "wait-on": "^8.0.3"
   },
   "dependencies": {},
   "peerDependencies": {}
