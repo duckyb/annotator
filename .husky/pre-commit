@@ -1,1 +1,2 @@
-yarn test
+echo "🔍 Linting staged files..."
+yarn lint-staged

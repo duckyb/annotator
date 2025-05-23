@@ -16,12 +16,17 @@
     "lint:fix": "eslint 'src/**/*.ts' --fix",
     "test": "jest",
     "test:coverage": "jest --coverage",
+    "test:changed": "jest --changedSince=HEAD",
     "prepare": "yarn build",
     "postinstall": "husky",
-    "prettify": "prettier --write 'src/**/*.ts'"
+    "prettify": "prettier --write 'src/**/*.ts'",
+    "lint-staged": "lint-staged"
   },
   "author": "Duccio Breschi <breschi@netseven.it>",
   "license": "MIT",
+  "lint-staged": {
+    "*.ts": ["eslint --fix", "prettier --write"]
+  },
   "devDependencies": {
     "@eslint/js": "^9.24.0",
     "@rollup/plugin-commonjs": "^25.0.0",
