@@ -10,5 +10,10 @@ export default tseslint.config(
   prettierConfig,
   {
     ignores: ['dist/**', 'node_modules/**', 'coverage/**', 'examples/**'],
+  },
+  {
+    rules: {
+      '@typescript-eslint/no-unused-vars': ['error', { 'argsIgnorePattern': '^_' }]
+    }
   }
 );

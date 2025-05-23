@@ -1,19 +1,27 @@
 import { highlightRange } from '../../highlighter/highlightRange';
 import type { HighlightElement } from '../../highlighter/types';
-import { setupTestContainer, teardownTestContainer, createRangeForText, createMockPdfEnvironment } from './test-utils';
+import {
+  setupTestContainer,
+  teardownTestContainer,
+  createRangeForText,
+  createMockPdfEnvironment,
+} from './test-utils';
 
 // Mock the drawHighlightsAbovePdfCanvas function
 jest.mock('../../highlighter/drawHighlightsAbovePdfCanvas', () => ({
-  drawHighlightsAbovePdfCanvas: jest.fn().mockImplementation((_: HTMLElement) => {
+  drawHighlightsAbovePdfCanvas: jest.fn().mockImplementation(() => {
     // Check if this is a PDF environment by looking for the canvas
     const canvas = document.querySelector('.pdf-canvas');
     if (canvas) {
       // Create a mock SVG rect element
-      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      const rect = document.createElementNS(
+        'http://www.w3.org/2000/svg',
+        'rect'
+      );
       return rect;
     }
     return null;
-  })
+  }),
 }));
 
 describe('highlightRange', () => {
@@ -55,12 +63,12 @@ describe('highlightRange', () => {
       if (range) {
         const customTag = 'mark';
         const customClass = 'custom-highlight';
-        
+
         // Apply highlight with custom parameters
         const highlights = highlightRange({
           range,
           tag: customTag,
-          cssClass: customClass
+          cssClass: customClass,
         });
 
         // Verify custom parameters were used
@@ -78,16 +86,18 @@ describe('highlightRange', () => {
 
       if (range) {
         const color = '#FF0000'; // Red
-        
+
         // Apply highlight with color
         const highlights = highlightRange({
           range,
-          color
+          color,
         });
 
         // Verify color was applied
         expect(highlights.length).toBeGreaterThan(0);
-        expect(highlights[0].style.backgroundColor).toBe('rgba(255, 0, 0, 0.3)');
+        expect(highlights[0].style.backgroundColor).toBe(
+          'rgba(255, 0, 0, 0.3)'
+        );
         expect(highlights[0].getAttribute('data-highlight-color')).toBe(color);
       }
     });
@@ -99,21 +109,21 @@ describe('highlightRange', () => {
       const whiteSpaceContainer = document.createElement('div');
       whiteSpaceContainer.innerHTML = '<p>Text with    multiple spaces</p>';
       document.body.appendChild(whiteSpaceContainer);
-      
+
       try {
         // Create a range that only includes whitespace
         const textNode = whiteSpaceContainer.querySelector('p')?.firstChild;
         expect(textNode).not.toBeNull();
-        
+
         if (textNode) {
           const range = document.createRange();
           // Select just the whitespace between "with" and "multiple"
-          range.setStart(textNode, 9);  // After "Text with"
-          range.setEnd(textNode, 13);   // Before "multiple"
-          
+          range.setStart(textNode, 9); // After "Text with"
+          range.setEnd(textNode, 13); // Before "multiple"
+
           // Apply highlight with default settings (allowWhitespace = false)
           const highlights = highlightRange({ range });
-          
+
           // Verify no highlights were created for whitespace
           expect(highlights.length).toBe(0);
         }
@@ -127,24 +137,24 @@ describe('highlightRange', () => {
       const whiteSpaceContainer = document.createElement('div');
       whiteSpaceContainer.innerHTML = '<p>Text with    multiple spaces</p>';
       document.body.appendChild(whiteSpaceContainer);
-      
+
       try {
         // Create a range that only includes whitespace
         const textNode = whiteSpaceContainer.querySelector('p')?.firstChild;
         expect(textNode).not.toBeNull();
-        
+
         if (textNode) {
           const range = document.createRange();
           // Select just the whitespace between "with" and "multiple"
-          range.setStart(textNode, 9);  // After "Text with"
-          range.setEnd(textNode, 13);   // Before "multiple"
-          
+          range.setStart(textNode, 9); // After "Text with"
+          range.setEnd(textNode, 13); // Before "multiple"
+
           // Apply highlight with allowWhitespace = true
-          const highlights = highlightRange({ 
+          const highlights = highlightRange({
             range,
-            allowWhitespace: true
+            allowWhitespace: true,
           });
-          
+
           // Verify highlights were created for whitespace
           expect(highlights.length).toBe(1);
           expect(highlights[0].textContent).toBe('    ');
@@ -157,30 +167,31 @@ describe('highlightRange', () => {
     it('should not highlight whitespace in restricted parent elements even with allowWhitespace=true', () => {
       // Create a table with a TR element (which is in the restricted parents list)
       const restrictedContainer = document.createElement('div');
-      restrictedContainer.innerHTML = '<table><tr><td>  Cell with spaces  </td></tr></table>';
+      restrictedContainer.innerHTML =
+        '<table><tr><td>  Cell with spaces  </td></tr></table>';
       document.body.appendChild(restrictedContainer);
-      
+
       try {
         // Get the TR element which is a restricted parent
         const trElement = restrictedContainer.querySelector('tr');
         expect(trElement).not.toBeNull();
-        
+
         if (trElement) {
           // Add a text node with only whitespace directly to the TR (invalid HTML but useful for testing)
           const whitespaceNode = document.createTextNode('   ');
           trElement.appendChild(whitespaceNode);
-          
+
           // Create a range for the whitespace
           const range = document.createRange();
           range.setStart(whitespaceNode, 0);
           range.setEnd(whitespaceNode, 3);
-          
+
           // Apply highlight with allowWhitespace = true
-          const highlights = highlightRange({ 
+          const highlights = highlightRange({
             range,
-            allowWhitespace: true
+            allowWhitespace: true,
           });
-          
+
           // Verify no highlights were created for whitespace in TR element
           expect(highlights.length).toBe(0);
         }
@@ -209,7 +220,9 @@ describe('highlightRange', () => {
     it('should create SVG highlights for text in PDF documents', () => {
       // Find a text node in the PDF text layer
       const text = 'This text can be highlighted';
-      const range = createRangeForText(pdfEnv.textLayer, text, { exactMatch: false });
+      const range = createRangeForText(pdfEnv.textLayer, text, {
+        exactMatch: false,
+      });
       expect(range).not.toBeNull();
 
       if (range) {
@@ -218,10 +231,10 @@ describe('highlightRange', () => {
 
         // Verify highlights were created
         expect(highlights.length).toBeGreaterThan(0);
-        
+
         // Check that the highlight has the transparent class
         expect(highlights[0].className).toContain('is-transparent');
-        
+
         // Check that the svgHighlight property was set
         expect((highlights[0] as HighlightElement).svgHighlight).not.toBeNull();
       }
@@ -234,14 +247,14 @@ describe('highlightRange', () => {
       const range = document.createRange();
       const textNode = container.querySelector('p')?.firstChild;
       expect(textNode).not.toBeNull();
-      
+
       if (textNode) {
         range.setStart(textNode, 5);
         range.setEnd(textNode, 5);
-        
+
         // Apply highlight to collapsed range
         const highlights = highlightRange({ range });
-        
+
         // Verify no highlights were created
         expect(highlights.length).toBe(0);
       }
@@ -254,14 +267,14 @@ describe('highlightRange', () => {
       const secondP = container.querySelectorAll('p')[1];
       expect(firstP).not.toBeNull();
       expect(secondP).not.toBeNull();
-      
+
       if (firstP && secondP) {
         range.setStart(firstP.firstChild as Node, 5);
         range.setEnd(secondP.firstChild as Node, 10);
-        
+
         // Apply highlight
         const highlights = highlightRange({ range });
-        
+
         // Verify multiple highlights were created
         expect(highlights.length).toBeGreaterThan(1);
       }
@@ -270,23 +283,26 @@ describe('highlightRange', () => {
     it('should handle ranges within annotator-placeholder elements', () => {
       // Create a container with a placeholder
       const placeholderContainer = document.createElement('div');
-      placeholderContainer.innerHTML = '<div class="annotator-placeholder"><span>Placeholder text</span></div>';
+      placeholderContainer.innerHTML =
+        '<div class="annotator-placeholder"><span>Placeholder text</span></div>';
       document.body.appendChild(placeholderContainer);
-      
+
       try {
         // Create a range in the placeholder
         const text = 'Placeholder text';
         const range = createRangeForText(placeholderContainer, text);
         expect(range).not.toBeNull();
-        
+
         if (range) {
           // Apply highlight
           const highlights = highlightRange({ range });
-          
+
           // Verify highlights were created but without SVG highlights
           expect(highlights.length).toBeGreaterThan(0);
           expect(highlights[0].className).not.toContain('is-transparent');
-          expect((highlights[0] as HighlightElement).svgHighlight).toBeUndefined();
+          expect(
+            (highlights[0] as HighlightElement).svgHighlight
+          ).toBeUndefined();
         }
       } finally {
         placeholderContainer.remove();
