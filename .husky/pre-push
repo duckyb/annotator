@@ -1,6 +1,3 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
 echo "🔍 Linting code..."
 yarn lint || {
   echo "❌ Linting failed. Please fix the issues before pushing."
