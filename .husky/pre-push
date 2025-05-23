@@ -1,0 +1,17 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🔍 Linting code..."
+yarn lint || {
+  echo "❌ Linting failed. Please fix the issues before pushing."
+  exit 1
+}
+
+echo "🧪 Running tests..."
+yarn test || {
+  echo "❌ Tests failed. Please fix the failing tests before pushing."
+  exit 1
+}
+
+echo "✅ All checks passed! Pushing changes..."
+
