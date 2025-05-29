@@ -15,5 +15,12 @@ export default tseslint.config(
     rules: {
       '@typescript-eslint/no-unused-vars': ['error', { 'argsIgnorePattern': '^_' }]
     }
+  },
+  {
+    // Allow 'any' type in test files
+    files: ['**/*.spec.ts', '**/*.test.ts', '**/__tests__/**/*.ts'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off'
+    }
   }
 );
