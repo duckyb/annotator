@@ -1,25 +1,4 @@
-import { SelectionModel } from './selection-model';
-
-// Create our own EventEmitter for testing since it's not exported
-class EventEmitter<T = void> {
-  private listeners: ((value: T) => void)[] = [];
-
-  emit(value?: T): void {
-    this.listeners.forEach((listener) => listener(value as T));
-  }
-
-  subscribe(listener: (value: T) => void): { unsubscribe: () => void } {
-    this.listeners.push(listener);
-    return {
-      unsubscribe: () => {
-        const index = this.listeners.indexOf(listener);
-        if (index !== -1) {
-          this.listeners.splice(index, 1);
-        }
-      },
-    };
-  }
-}
+import { SelectionModel, EventEmitter } from './selection-model';
 
 describe('EventEmitter', () => {
   it('should emit values to subscribers', () => {

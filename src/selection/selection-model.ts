@@ -1,7 +1,7 @@
 /**
  * Simple event emitter to replace RxJS Subject
  */
-class EventEmitter<T = void> {
+export class EventEmitter<T = void> {
   private listeners: ((value: T) => void)[] = [];
 
   emit(value?: T): void {

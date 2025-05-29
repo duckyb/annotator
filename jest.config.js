@@ -16,8 +16,7 @@ export default {
     ],
   },
   testMatch: [
-    '**/__tests__/**/*.test.ts', // Legacy pattern (to be removed after migration)
-    '**/*.spec.ts', // Angular-style unit tests
-    'tests/integration/**/*.spec.ts', // Integration tests
+    '**/*.spec.ts', // Unit tests
+    'src/__tests__/integration/**/*.integration.spec.ts', // Integration tests
   ],
 };
