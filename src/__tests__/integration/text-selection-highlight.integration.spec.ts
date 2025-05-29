@@ -37,23 +37,19 @@ describe('Text Selection to Highlight Flow', () => {
   it('should create a highlight for selected text', () => {
     // 1. Create a range for the text "bold text" which exists in our test content
     const range = createRangeForText(container, 'bold text');
-    if (!range) {
-      throw new Error('Failed to create range for text');
-    }
+    expect(range).toBeDefined();
 
     // 2. Create a selection
     const selection = window.getSelection();
-    if (!selection) {
-      throw new Error('No selection object available');
-    }
+    expect(selection).toBeDefined();
 
-    selection.removeAllRanges();
-    selection.addRange(range);
+    selection!.removeAllRanges();
+    selection!.addRange(range!);
 
     // 3. Create an annotation using the annotator
     const annotation = annotator.createAnnotation({
       root: container,
-      range,
+      range: range!,
       context: { documentId: 'test-document' },
       color: '#FFEB3B',
       metadata: {
@@ -83,14 +79,12 @@ describe('Text Selection to Highlight Flow', () => {
 
     // 2. Create a range for the text "special content" which exists in our test content
     const range = createRangeForText(container, 'special content');
-    if (!range) {
-      throw new Error('Failed to create range for text');
-    }
+    expect(range).toBeDefined();
 
     // 3. Create an annotation using the annotator
     const annotation = annotator.createAnnotation({
       root: container,
-      range,
+      range: range!,
       context: { documentId: 'test-document' },
       color: '#FFEB3B',
     });
