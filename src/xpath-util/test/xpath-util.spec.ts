@@ -81,7 +81,7 @@ describe('annotator/anchoring/xpath-util', () => {
     it('returns null if no text node exists', () => {
       const span = document.createElement('span');
       container.appendChild(span);
-      expect(getLastTextNodeUpTo(span)).toEqual(null);
+      expect(getLastTextNodeUpTo(span)).toBeNull();
     });
   });
 
@@ -124,7 +124,7 @@ describe('annotator/anchoring/xpath-util', () => {
     it('returns null if no text node exists', () => {
       const span = document.createElement('span');
       container.appendChild(span);
-      expect(getFirstTextNodeNotBefore(span)).toEqual(null);
+      expect(getFirstTextNodeNotBefore(span)).toBeNull();
     });
   });
 
@@ -198,7 +198,7 @@ describe('annotator/anchoring/xpath-util', () => {
     ].forEach((test: { id: string; xpaths: string[] }) => {
       it('produces the correct xpath for the provided node', () => {
         const node = document.getElementById(test.id);
-        expect(xpathFromNode(node, document.body)).toEqual(test.xpaths[0]);
+        expect(xpathFromNode(node, document.body)).toBe(test.xpaths[0]);
       });
 
       it('produces the correct xpath for the provided text node(s)', () => {

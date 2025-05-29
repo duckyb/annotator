@@ -1,14 +1,14 @@
-import { highlightRange } from '../../highlighter/highlightRange';
-import type { HighlightElement } from '../../highlighter/types';
+import { highlightRange } from './highlightRange';
+import type { HighlightElement } from './types';
 import {
   setupTestContainer,
   teardownTestContainer,
   createRangeForText,
   createMockPdfEnvironment,
-} from './test-utils';
+} from '../__tests__/utils/highlighter-utils';
 
 // Mock the drawHighlightsAbovePdfCanvas function
-jest.mock('../../highlighter/drawHighlightsAbovePdfCanvas', () => ({
+jest.mock('./drawHighlightsAbovePdfCanvas', () => ({
   drawHighlightsAbovePdfCanvas: jest.fn().mockImplementation(() => {
     // Check if this is a PDF environment by looking for the canvas
     const canvas = document.querySelector('.pdf-canvas');

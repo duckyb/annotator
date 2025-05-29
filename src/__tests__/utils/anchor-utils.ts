@@ -31,26 +31,29 @@ export function teardownTestContainer(container: HTMLElement): void {
  * @param word The word to create a range for
  * @returns Range | null The created range or null if not possible
  */
-export function createRangeForWord(container: HTMLElement, word: string): Range | null {
+export function createRangeForWord(
+  container: HTMLElement,
+  word: string
+): Range | null {
   const range = document.createRange();
   const firstChild = container.firstChild;
-  
+
   if (!firstChild) {
     return null;
   }
-  
+
   const text = container.textContent || '';
   const startIndex = text.indexOf(word);
-  
+
   // Ensure word is found in the text
   if (startIndex === -1) {
     throw new Error(`Test text "${word}" not found in container`);
   }
-  
+
   const endIndex = startIndex + word.length;
-  
+
   range.setStart(firstChild, startIndex);
   range.setEnd(firstChild, endIndex);
-  
+
   return range;
 }

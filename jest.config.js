@@ -1,9 +1,11 @@
 export default {
   preset: 'ts-jest/presets/default-esm',
   testEnvironment: 'jsdom',
+  setupFilesAfterEnv: ['<rootDir>/src/text-range/test/setup-jest.ts'],
   extensionsToTreatAsEsm: ['.ts'],
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1',
+    '^@/(.*)$': '<rootDir>/src/$1',
   },
   transform: {
     '^.+\\.tsx?$': [
@@ -13,5 +15,9 @@ export default {
       },
     ],
   },
-  testMatch: ['**/__tests__/**/*.test.ts'],
-};
+  testMatch: [
+    '**/__tests__/**/*.test.ts',  // Legacy pattern (to be removed after migration)
+    '**/*.spec.ts',             // Angular-style unit tests
+    'tests/integration/**/*.spec.ts'  // Integration tests
+  ],
+}

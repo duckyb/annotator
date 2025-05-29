@@ -1,7 +1,10 @@
-import { HighlightManager } from '../../highlighter/highlight-manager';
-import { AnchorEvent } from '../../types';
-import type { HighlightElement } from '../../highlighter';
-import { setupTestContainer, teardownTestContainer } from './test-utils';
+import { HighlightManager } from './highlight-manager';
+import { AnchorEvent } from '../types';
+import type { HighlightElement } from '.';
+import {
+  setupTestContainer,
+  teardownTestContainer,
+} from '../__tests__/utils/highlighter-utils';
 
 /**
  * Creates a mock HighlightElement for testing purposes

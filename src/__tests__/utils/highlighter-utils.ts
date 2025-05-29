@@ -34,7 +34,7 @@ export function teardownTestContainer(container: HTMLElement): void {
  * @returns Range | null The created range or null if not possible
  */
 export function createRangeForText(
-  container: HTMLElement, 
+  container: HTMLElement,
   text: string,
   options: {
     startOffset?: number;
@@ -44,33 +44,31 @@ export function createRangeForText(
 ): Range | null {
   const range = document.createRange();
   const { startOffset = 0, endOffset, exactMatch = true } = options;
-  
+
   // Find the text node containing the text
-  const walker = document.createTreeWalker(
-    container,
-    NodeFilter.SHOW_TEXT
-  );
-  
+  const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+
   let node: Node | null;
   while ((node = walker.nextNode())) {
     const content = node.textContent || '';
     const index = content.indexOf(text);
-    
+
     if (index !== -1) {
       // If exactMatch is true, only match if the text node contains exactly the text
       if (exactMatch && content !== text && content.trim() !== text) {
         continue;
       }
-      
+
       const start = index + startOffset;
-      const end = endOffset !== undefined ? index + endOffset : index + text.length;
-      
+      const end =
+        endOffset !== undefined ? index + endOffset : index + text.length;
+
       range.setStart(node, start);
       range.setEnd(node, end);
       return range;
     }
   }
-  
+
   return null;
 }
 
@@ -82,13 +80,13 @@ export function createMockPdfEnvironment() {
   // Create the container for the PDF page
   const pageContainer = document.createElement('div');
   pageContainer.className = 'page';
-  
+
   // Create the canvas element that would be rendered by PDF.js
   const canvas = document.createElement('canvas');
   canvas.width = 800;
   canvas.height = 1000;
   canvas.className = 'pdf-canvas';
-  
+
   // Create the text layer that would be rendered above the canvas
   const textLayer = document.createElement('div');
   textLayer.className = 'textLayer';
@@ -97,23 +95,23 @@ export function createMockPdfEnvironment() {
   textLayer.style.left = '0';
   textLayer.style.width = '100%';
   textLayer.style.height = '100%';
-  
+
   // Add some text content to the text layer
   textLayer.innerHTML = `
     <span>This is text in a PDF document. </span>
     <span>This text can be highlighted. </span>
     <span>Multiple highlights can be applied.</span>
   `;
-  
+
   // Assemble the page
   pageContainer.appendChild(canvas);
   pageContainer.appendChild(textLayer);
   document.body.appendChild(pageContainer);
-  
+
   return {
     canvas,
     textLayer,
     container: pageContainer,
-    cleanup: () => pageContainer.remove()
+    cleanup: () => pageContainer.remove(),
   };
 }

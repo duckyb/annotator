@@ -38,16 +38,27 @@ export function nodeToString(node: Node): string {
  *
  * This produces more readable output than using `assert.equal(actual, expected)`
  * if there is a mismatch.
+ *
+ * @returns {boolean} True if nodes are equal, false otherwise
  */
-export function assertNodesEqual(actual: Node, expected: Node) {
+export function assertNodesEqual(actual: Node, expected: Node): boolean {
+  return actual === expected;
+}
+
+/**
+ * Compare two nodes and throw an error if they are not equal.
+ * This is used by the custom matcher to provide better error messages.
+ */
+export function assertNodesEqualWithMessage(actual: Node, expected: Node) {
   if (actual !== expected) {
     return {
       pass: false,
-      message: `Expected ${nodeToString(actual)} to equal ${nodeToString(expected)}`,
+      message: () =>
+        `Expected ${nodeToString(actual)} to equal ${nodeToString(expected)}`,
     };
   }
   return {
     pass: true,
-    message: `${nodeToString(actual)} is equal to ${nodeToString(expected)}`,
+    message: () => `Expected nodes not to be equal`,
   };
 }

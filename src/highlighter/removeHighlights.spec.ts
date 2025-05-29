@@ -1,14 +1,14 @@
-import { removeHighlights } from '../../highlighter/removeHighlights';
-import type { HighlightElement } from '../../highlighter/types';
-import { highlightRange } from '../../highlighter/highlightRange';
+import { removeHighlights } from './removeHighlights';
+import type { HighlightElement } from './types';
+import { highlightRange } from './highlightRange';
 import {
   setupTestContainer,
   teardownTestContainer,
   createRangeForText,
-} from './test-utils';
+} from '../__tests__/utils/highlighter-utils';
 
 // Mock the replaceWith function to test it's being called correctly
-jest.mock('../../highlighter/replaceWith', () => ({
+jest.mock('./replaceWith', () => ({
   replaceWith: jest
     .fn()
     .mockImplementation((node: HTMLElement, replacements: HTMLElement[]) => {

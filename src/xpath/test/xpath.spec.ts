@@ -29,11 +29,11 @@ describe('annotator/anchoring/xpath', () => {
 
       container.innerHTML = html;
 
-      spyOn(document, 'evaluate');
+      jest.spyOn(document, 'evaluate');
     });
 
     afterEach(() => {
-      // document.evaluate.restore();
+      jest.restoreAllMocks();
       container.remove();
     });
 
@@ -85,7 +85,7 @@ describe('annotator/anchoring/xpath', () => {
       it('evaluates simple XPaths without using `document.evaluate`', () => {
         const result = nodeFromXPath(test.xpath, container);
         expect(document.evaluate).not.toHaveBeenCalled();
-        expect(result?.nodeName).toEqual(test.nodeName);
+        expect(result?.nodeName).toBe(test.nodeName);
       });
     });
 
@@ -109,14 +109,10 @@ describe('annotator/anchoring/xpath', () => {
     //   });
     // });
 
-    ['not-a-valid-xpath'].forEach((xpath) => {
-      it('throws if XPath is invalid', () => {
-        // expect(() => {
-        //   nodeFromXPath(xpath, container);
-        // }).toThrowError(/The string '.*' is not a valid XPath expression/);
-        const result = nodeFromXPath(xpath, container);
-        expect(result).toBeNull();
-      });
+    it('throws an error for invalid XPath', () => {
+      expect(() => {
+        nodeFromXPath('not-a-valid-xpath', container);
+      }).toThrow();
     });
   });
 });

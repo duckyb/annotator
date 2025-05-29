@@ -1,6 +1,10 @@
-import { TextQuoteAnchor } from '../../anchors/text-quote-anchor';
-import type { TextQuoteSelectorWithType } from '../../types';
-import { setupTestContainer, teardownTestContainer, createRangeForWord as createRangeForWordUtil } from './test-utils';
+import { TextQuoteAnchor } from './text-quote-anchor';
+import type { TextQuoteSelectorWithType } from '../types';
+import {
+  setupTestContainer,
+  teardownTestContainer,
+  createRangeForWord as createRangeForWordUtil,
+} from '../__tests__/utils/anchor-utils';
 
 describe('TextQuoteAnchor', () => {
   let container: HTMLDivElement;
@@ -22,9 +26,9 @@ describe('TextQuoteAnchor', () => {
     it('should create a TextQuoteAnchor with the provided values', () => {
       const anchor = new TextQuoteAnchor(container, 'Liberty', {
         prefix: 'conceived in ',
-        suffix: ', and dedicated'
+        suffix: ', and dedicated',
       });
-      
+
       expect(anchor).toBeInstanceOf(TextQuoteAnchor);
       expect(anchor.root).toBe(container);
       expect(anchor.exact).toBe('Liberty');
@@ -34,7 +38,7 @@ describe('TextQuoteAnchor', () => {
 
     it('should create a TextQuoteAnchor with default empty context', () => {
       const anchor = new TextQuoteAnchor(container, 'Liberty');
-      
+
       expect(anchor).toBeInstanceOf(TextQuoteAnchor);
       expect(anchor.root).toBe(container);
       expect(anchor.exact).toBe('Liberty');
@@ -48,10 +52,10 @@ describe('TextQuoteAnchor', () => {
       const word = 'Liberty';
       const range = createRangeForWord(word);
       expect(range).not.toBeNull();
-      
+
       if (range) {
         const anchor = TextQuoteAnchor.fromRange(container, range);
-        
+
         expect(anchor).toBeInstanceOf(TextQuoteAnchor);
         expect(anchor.root).toBe(container);
         expect(anchor.exact).toBe(word);
@@ -66,7 +70,7 @@ describe('TextQuoteAnchor', () => {
       const range = document.createRange();
       range.setStart(textNode, 0);
       range.setEnd(textNode, 4);
-      
+
       expect(() => {
         TextQuoteAnchor.fromRange(container, range);
       }).toThrow();
@@ -79,11 +83,11 @@ describe('TextQuoteAnchor', () => {
         type: 'TextQuoteSelector',
         exact: 'Liberty',
         prefix: 'conceived in ',
-        suffix: ', and dedicated'
+        suffix: ', and dedicated',
       };
-      
+
       const anchor = TextQuoteAnchor.fromSelector(container, selector);
-      
+
       expect(anchor).toBeInstanceOf(TextQuoteAnchor);
       expect(anchor.root).toBe(container);
       expect(anchor.exact).toBe('Liberty');
@@ -96,11 +100,11 @@ describe('TextQuoteAnchor', () => {
     it('should convert a TextQuoteAnchor to a TextQuoteSelector', () => {
       const anchor = new TextQuoteAnchor(container, 'Liberty', {
         prefix: 'conceived in ',
-        suffix: ', and dedicated'
+        suffix: ', and dedicated',
       });
-      
+
       const selector = anchor.toSelector();
-      
+
       expect(selector.type).toBe('TextQuoteSelector');
       expect(selector.exact).toBe('Liberty');
       expect(selector.prefix).toBe('conceived in ');
@@ -113,18 +117,18 @@ describe('TextQuoteAnchor', () => {
       const word = 'Liberty';
       const anchor = new TextQuoteAnchor(container, word, {
         prefix: 'conceived in ',
-        suffix: ', and dedicated'
+        suffix: ', and dedicated',
       });
-      
+
       const range = anchor.toRange();
-      
+
       expect(range).toBeInstanceOf(Range);
       expect(range.toString()).toBe(word);
     });
 
     it('should throw an error if the quote is not found', () => {
       const anchor = new TextQuoteAnchor(container, 'NonExistentText');
-      
+
       expect(() => {
         anchor.toRange();
       }).toThrow();
@@ -134,7 +138,7 @@ describe('TextQuoteAnchor', () => {
       const anchor = new TextQuoteAnchor(container, 'Liberty', {
         prefix: 'wrong prefix ',
       });
-      
+
       expect(() => {
         anchor.toRange();
       }).toThrow();
@@ -144,7 +148,7 @@ describe('TextQuoteAnchor', () => {
       const anchor = new TextQuoteAnchor(container, 'Liberty', {
         suffix: ' wrong suffix',
       });
-      
+
       expect(() => {
         anchor.toRange();
       }).toThrow();
@@ -155,11 +159,11 @@ describe('TextQuoteAnchor', () => {
     it('should convert a TextQuoteAnchor to a TextPositionAnchor', () => {
       const word = 'Liberty';
       const anchor = new TextQuoteAnchor(container, word);
-      
+
       const positionAnchor = anchor.toPositionAnchor();
-      
+
       expect(positionAnchor).toBeDefined();
-      
+
       // Verify the position anchor by converting it to a range
       const range = positionAnchor.toRange();
       expect(range.toString()).toBe(word);
@@ -167,7 +171,7 @@ describe('TextQuoteAnchor', () => {
 
     it('should throw an error if the quote is not found', () => {
       const anchor = new TextQuoteAnchor(container, 'NonExistentText');
-      
+
       expect(() => {
         anchor.toPositionAnchor();
       }).toThrow();
@@ -180,24 +184,24 @@ describe('TextQuoteAnchor', () => {
       const word = 'Liberty';
       const anchor = new TextQuoteAnchor(container, word, {
         prefix: 'conceived in ',
-        suffix: ', and dedicated'
+        suffix: ', and dedicated',
       });
-      
+
       // Verify the anchor can find the text
       const range = anchor.toRange();
       expect(range.toString()).toBe(word);
     });
-    
+
     it('should handle conversion from Range to TextQuoteAnchor', () => {
       // Use a single test word with a known context
       const word = 'Liberty';
       const originalRange = createRangeForWord(word);
       expect(originalRange).not.toBeNull();
-      
+
       if (originalRange) {
         // Range to TextQuoteAnchor
         const anchor = TextQuoteAnchor.fromRange(container, originalRange);
-        
+
         // Verify the anchor properties
         expect(anchor.exact).toBe(word);
         expect(anchor.context.prefix).toBeDefined();
@@ -209,21 +213,24 @@ describe('TextQuoteAnchor', () => {
       const exact = 'Liberty';
       const prefix = 'conceived in ';
       const suffix = ', and dedicated';
-      
+
       // Create original anchor
-      const originalAnchor = new TextQuoteAnchor(container, exact, { prefix, suffix });
-      
+      const originalAnchor = new TextQuoteAnchor(container, exact, {
+        prefix,
+        suffix,
+      });
+
       // Convert to selector
       const selector = originalAnchor.toSelector();
-      
+
       // Convert back to anchor
       const newAnchor = TextQuoteAnchor.fromSelector(container, selector);
-      
+
       // Verify properties match
       expect(newAnchor.exact).toBe(exact);
       expect(newAnchor.context.prefix).toBe(prefix);
       expect(newAnchor.context.suffix).toBe(suffix);
-      
+
       // Verify it can find the text
       const range = newAnchor.toRange();
       expect(range.toString()).toBe(exact);
