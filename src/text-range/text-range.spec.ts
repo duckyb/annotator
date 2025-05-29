@@ -1,5 +1,5 @@
-import { TextPosition, TextRange } from '../index';
-import { assertNodesEqual } from './compare-dom';
+import { TextPosition, TextRange } from './index';
+import { assertNodesEqual } from '../__tests__/utils/compare-dom';
 
 // import { assertNodesEqual } from '../../../test-util/compare-dom';
 
