@@ -70,11 +70,8 @@ describe('annotator/anchoring/xpath-util', () => {
       container.innerHTML =
         '<span>text first</span><span>text last</span><div id="too-far"></div>';
       const tooFarElement = container.querySelector('#too-far');
-      if (!tooFarElement) {
-        fail('Element #too-far not found');
-        return;
-      }
-      const result = getLastTextNodeUpTo(tooFarElement);
+      expect(tooFarElement).toBeTruthy();
+      const result = getLastTextNodeUpTo(tooFarElement!);
       expect(result?.nodeValue).toEqual('text last');
     });
 
@@ -113,11 +110,8 @@ describe('annotator/anchoring/xpath-util', () => {
       container.innerHTML =
         '<div id="too-far"></div><span>text first</span><span>text last</span>';
       const tooFarElement = container.querySelector('#too-far');
-      if (!tooFarElement) {
-        fail('Element #too-far not found');
-        return;
-      }
-      const result = getFirstTextNodeNotBefore(tooFarElement);
+      expect(tooFarElement).toBeTruthy();
+      const result = getFirstTextNodeNotBefore(tooFarElement!);
       expect(result?.nodeValue).toEqual('text first');
     });
 
@@ -203,11 +197,8 @@ describe('annotator/anchoring/xpath-util', () => {
 
       it('produces the correct xpath for the provided text node(s)', () => {
         const element = document.getElementById(test.id);
-        if (!element) {
-          fail(`Element with id ${test.id} not found`);
-          return;
-        }
-        let node = element.firstChild;
+        expect(element).toBeTruthy();
+        let node = element!.firstChild;
         // collect all text nodes after the target queried node.
         const textNodes = [];
         while (node) {
