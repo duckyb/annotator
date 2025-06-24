@@ -19,4 +19,5 @@ export default {
     '**/*.spec.ts', // Unit tests
     'src/__tests__/integration/**/*.integration.spec.ts', // Integration tests
   ],
+  coveragePathIgnorePatterns: ['/node_modules/', '/src/__tests__/utils/'],
 };

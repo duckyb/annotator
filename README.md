@@ -4,7 +4,7 @@ A framework-agnostic TypeScript library for anchoring and highlighting functiona
 
 ## Overview
 
-This library provides a comprehensive set of tools for creating, managing, and interacting with annotations in web documents. It was extracted from the Digital Philology Hub (DPH) backoffice application to enable reuse across multiple projects.
+This library provides a comprehensive set of tools for creating, managing, and interacting with annotations (highlights + metadata) in web documents.
 
 The library is completely framework-agnostic and can be used with any JavaScript framework or vanilla JavaScript applications.
 
@@ -13,11 +13,11 @@ The library is completely framework-agnostic and can be used with any JavaScript
 - **Text highlighting** in HTML documents
 - **PDF document highlighting**
 - **Anchoring annotations** to specific positions in documents
-- Multiple selector types:
-  - XPath-based selection
-  - Range-based selection
-  - Text quote-based selection
-  - Text position-based selection
+- Multiple selector types with intelligent fallback:
+  - **RangeSelector** - Most precise, uses exact DOM node references
+  - **TextPositionSelector** - Uses character offsets from document start
+  - **TextQuoteSelector** - Uses exact text matching with optional prefix/suffix
+  - **XPath-based selection** (legacy support)
 
 ## Installation
 
@@ -109,19 +109,38 @@ Removes the specified highlights from the document.
 
 ### Anchors Module
 
-The anchors module provides functionality for creating and managing anchors in web documents.
+## Selector Priority and Fallback Strategy
 
-#### TextQuoteAnchor
+The annotation library uses a sophisticated fallback strategy when anchoring annotations to ensure maximum reliability across different document states and environments.
 
-Creates an anchor based on a text quote.
+### Priority Order
 
-#### TextPositionAnchor
+When multiple selectors are available for an annotation, the library tries them in the following order:
 
-Creates an anchor based on text position.
+1. **RangeSelector** (Highest Priority)
 
-#### RangeAnchor
+   - Uses exact DOM node references with start/end containers and offsets
+   - Most precise and fastest when the document structure hasn't changed
+   - May fail if DOM nodes have been modified or regenerated
 
-Creates an anchor based on a range.
+2. **TextPositionSelector** (Medium Priority)
+
+   - Uses character offsets from the beginning of the document
+   - Reliable when document content is stable but DOM structure may change
+   - Less sensitive to minor DOM modifications
+
+3. **TextQuoteSelector** (Fallback Priority)
+   - Uses exact text content with optional prefix and suffix context
+   - Most robust against document changes, relies on text content matching
+   - Can handle significant DOM restructuring as long as text content remains
+
+### Quote Assertion
+
+When a `TextQuoteSelector` is present, the library performs **quote assertion** on results from `RangeSelector` and `TextPositionSelector`:
+
+- If the selected text doesn't match the expected quote text, a "quote mismatch" error is thrown
+- The system then falls back to the next selector in priority order
+- This ensures annotation accuracy and prevents anchoring to wrong content
 
 ## Development
 
