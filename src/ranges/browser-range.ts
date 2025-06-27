@@ -1,3 +1,12 @@
+/**
+ * @fileoverview Browser range normalization utilities for consistent DOM selection handling.
+ *
+ * This module provides the BrowserRange class which wraps native browser Range objects and
+ * normalizes them to ensure consistent behavior across different browsers. The normalization
+ * process handles differences in how browsers generate ranges and selections, particularly
+ * around text node boundaries and element node containers.
+ */
+
 import type { BrowserNormalizedRange } from '../types';
 import { getFirstTextNodeNotBefore, getLastTextNodeUpTo } from '../xpath-util';
 
