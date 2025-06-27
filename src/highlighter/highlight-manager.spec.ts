@@ -67,7 +67,7 @@ describe('HighlightManager', () => {
 
       // Use type assertion to access private methods
       // This is a common testing pattern when you need to test private methods
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       const managerInstance = manager as any;
       const originalOnMouseOver = managerInstance.onMouseOver;
       managerInstance.onMouseOver = jest.fn(originalOnMouseOver);
@@ -104,7 +104,6 @@ describe('HighlightManager', () => {
 
       // Use type assertion to access private methods
       // This is a common testing pattern when you need to test private methods
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const managerInstance = manager as any;
       const originalOnMouseOver = managerInstance.onMouseOver;
       managerInstance.onMouseOver = jest.fn(originalOnMouseOver);
@@ -133,7 +132,7 @@ describe('HighlightManager', () => {
 
       // Use type assertion to access private methods
       // This is a common testing pattern when you need to test private methods
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       const managerInstance = manager as any;
       const originalOnMouseOver = managerInstance.onMouseOver;
       const originalOnMouseOut = managerInstance.onMouseOut;
@@ -218,7 +217,7 @@ describe('HighlightManager', () => {
 
       // Use type assertion to access private methods
       // This is a common testing pattern when you need to test private methods
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       const managerInstance = manager as any;
       const originalOnMouseOver = managerInstance.onMouseOver;
       managerInstance.onMouseOver = jest.fn(originalOnMouseOver);
@@ -252,7 +251,7 @@ describe('HighlightManager', () => {
 
       // Use type assertion to access private methods
       // This is a common testing pattern when you need to test private methods
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       const managerInstance = manager as any;
       const originalOnMouseOut = managerInstance.onMouseOut;
       managerInstance.onMouseOut = jest.fn(originalOnMouseOut);
@@ -290,7 +289,7 @@ describe('HighlightManager', () => {
 
       // Use type assertion to access private methods
       // This is a common testing pattern when you need to test private methods
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       const managerInstance = manager as any;
       const originalOnMouseOver = managerInstance.onMouseOver;
       managerInstance.onMouseOver = jest.fn(originalOnMouseOver);
@@ -333,7 +332,7 @@ describe('HighlightManager', () => {
 
       // Use type assertion to access private methods
       // This is a common testing pattern when you need to test private methods
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       const managerInstance = manager as any;
       const originalOnMouseOver = managerInstance.onMouseOver;
       managerInstance.onMouseOver = jest.fn(originalOnMouseOver);
