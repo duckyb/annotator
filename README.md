@@ -3,7 +3,7 @@
 [![npm version](https://badge.fury.io/js/%40net7%2Fannotator.svg)](https://www.npmjs.com/package/@net7/annotator)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/License-BSD%202--Clause-blue.svg)](LICENSE)
-[![Build Status](https://img.shields.io/github/actions/workflow/status/net7/annotator/ci.yml)](https://github.com/net7/annotator/actions)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/duckyb/annotator/ci.yml)](https://github.com/duckyb/annotator/actions)
 
 A **framework-agnostic TypeScript library** for anchoring and highlighting text in web documents with intelligent fallback strategies.
 
