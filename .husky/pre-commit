@@ -1,0 +1,11 @@
+echo "🔍 Linting staged files..."
+yarn lint-staged || {
+  echo "❌ Linting failed. Please fix the issues before committing."
+  exit 1
+}
+
+echo "🧪 Running tests on changed files..."
+yarn test:changed || {
+  echo "❌ Tests failed. Please fix the failing tests before committing."
+  exit 1
+}
