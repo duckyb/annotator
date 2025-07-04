@@ -2,7 +2,9 @@ import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import typescript from '@rollup/plugin-typescript';
 import { dts } from 'rollup-plugin-dts';
-import pkg from './package.json' assert { type: 'json' };
+import { readFileSync } from 'fs';
+
+const pkg = JSON.parse(readFileSync('./package.json', 'utf-8'));
 
 export default [
   // ESM and CommonJS bundles
@@ -27,7 +29,7 @@ export default [
         tsconfig: './tsconfig.json',
         declaration: true, // Ensure declarations are generated
         declarationDir: './dist/types', // Output declarations here
-        rootDir: './src' // Specify root dir to maintain structure in declarationDir
+        rootDir: './src', // Specify root dir to maintain structure in declarationDir
       }),
     ],
     external: [],
