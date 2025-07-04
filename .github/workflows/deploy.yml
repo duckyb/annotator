@@ -41,8 +41,8 @@ jobs:
       - name: Build
         run: yarn build
 
-      - name: Copy examples/index.html to dist/index.html
-        run: cp examples/index.html dist/index.html
+      - name: Copy built library to docs for GitHub Pages
+        run: cp -r dist/* docs/
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -50,8 +50,8 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload dist directory
-          path: './dist'
+          # Upload docs directory
+          path: './docs'
 
       - name: Deploy to GitHub Pages
         id: deployment

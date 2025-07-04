@@ -46,7 +46,7 @@ jobs:
           yarn version --new-version ${{ github.event.inputs.version }} --no-git-tag-version
 
       - name: Publish to npm
-        run: yarn publish --access public
+        run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 

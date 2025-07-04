@@ -154,7 +154,7 @@ npm run lint
 
 ## 📚 Examples
 
-Check out the [`examples/`](examples/) directory for:
+Check out the [`docs/`](docs/) directory for:
 
 - Basic usage examples
 - Advanced demo with full UI
