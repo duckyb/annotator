@@ -1,25 +1,25 @@
-# Annotator Library
+# @net7/annotator
 
-A framework-agnostic TypeScript library for anchoring and highlighting functionality in web documents.
+[![npm version](https://badge.fury.io/js/%40net7%2Fannotator.svg)](https://www.npmjs.com/package/@net7/annotator)
+[![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
+[![License](https://img.shields.io/badge/License-BSD%202--Clause-blue.svg)](LICENSE)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/net7/annotator/ci.yml)](https://github.com/net7/annotator/actions)
 
-## Overview
+A **framework-agnostic TypeScript library** for anchoring and highlighting text in web documents with intelligent fallback strategies.
 
-This library provides a comprehensive set of tools for creating, managing, and interacting with annotations (highlights + metadata) in web documents.
+## ✨ Features
 
-The library is completely framework-agnostic and can be used with any JavaScript framework or vanilla JavaScript applications.
+- 🎯 **Multiple anchoring strategies** with automatic fallback
+- 📝 **Text highlighting** with customizable styles
+- 🌐 **Framework-agnostic** - works with any JavaScript framework
+- 🔧 **TypeScript support** with full type definitions
+- 📱 **PDF document support** for complex layouts
+- ⚡ **Event-driven architecture** for reactive applications
+- 🎨 **Context-aware filtering** for multi-document apps
 
-## Features
+## 🚀 Quick Start
 
-- **Text highlighting** in HTML documents
-- **PDF document highlighting**
-- **Anchoring annotations** to specific positions in documents
-- Multiple selector types with intelligent fallback:
-  - **RangeSelector** - Most precise, uses exact DOM node references
-  - **TextPositionSelector** - Uses character offsets from document start
-  - **TextQuoteSelector** - Uses exact text matching with optional prefix/suffix
-  - **XPath-based selection** (legacy support)
-
-## Installation
+### Installation
 
 ```bash
 npm install @net7/annotator
@@ -27,134 +27,149 @@ npm install @net7/annotator
 yarn add @net7/annotator
 ```
 
-## Usage Examples
-
-### Creating a Highlight Annotation
+### Basic Usage
 
 ```typescript
 import { Annotator } from '@net7/annotator';
 
-// --- Example function to create annotation from user selection ---
-function createAnnotationFromSelection() {
-  const selection = window.getSelection();
-  if (!selection || selection.rangeCount === 0) {
-    console.log('No text selected.');
-    return;
-  }
+// Create annotator instance
+const annotator = new Annotator();
 
-  const range = selection.getRangeAt(0);
+// Set document context
+annotator.setContext({ documentId: 'doc-123' });
 
-  // --- Provide necessary details (replace with your application's logic) ---
-  const rootElement = document.body; // Or your specific content root
+// Create annotation from user selection
+const selection = window.getSelection();
+if (selection && selection.rangeCount > 0) {
+  const result = annotator.createAnnotation({
+    root: document.body,
+    range: selection.getRangeAt(0),
+    context: { documentId: 'doc-123' },
+    color: '#FFFF00',
+    metadata: { comment: 'Important note' },
+  });
 
-  // Define your annotation context with properties relevant to your application
-  const context = {
-    documentId: 'doc-123',
-    pageNumber: 5,
-    // Add any other context properties needed for your application
-  };
-
-  // Define custom metadata for this annotation
-  const metadata = {
-    createdBy: 'user@example.com',
-    tags: ['important', 'review'],
-    comment: 'This section needs review',
-    likes: 0,
-  };
-  // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
-
-  try {
-    // Create the annotation data and initial highlights
-    const result = annotator.createAnnotation({
-      root: rootElement,
-      range: range,
-      context: context,
-      metadata: metadata,
-    });
-    console.log('Annotation created:', result.annotation);
-    console.log('Highlight elements:', result.highlights);
-
-    // Optional: Clear the browser selection highlight
-    selection.removeAllRanges();
-  } catch (error) {
-    console.error('Error creating annotation:', error);
-    // Handle cases where the range might be invalid, etc.
-  }
+  console.log('Annotation created:', result);
 }
-
-// Example usage: Call this function when a user clicks a button, for example.
-// createAnnotationFromSelection();
 ```
 
-## API Documentation
+## 📖 API Reference
 
-### Highlighter Module
+### Annotator Class
 
-The highlighter module provides functionality for creating and managing highlights in web documents.
+#### Constructor
 
-#### `highlightRange(range, tag, cssClass)`
+```typescript
+new Annotator(options?: { allowWhitespace?: boolean })
+```
 
-Wraps the DOM Nodes within the provided range with a highlight element of the specified class.
+#### Key Methods
 
-- `range`: DOM Range to be highlighted
-- `tag`: HTML tag to use for the highlight element (default: 'span')
-- `cssClass`: CSS class to use for the highlight (default: 'highlight')
-- Returns: Array of HighlightElement objects
+| Method                     | Description                            |
+| -------------------------- | -------------------------------------- |
+| `setContext(context)`      | Set document context for filtering     |
+| `createAnnotation(params)` | Create annotation from DOM range       |
+| `load(annotations, root)`  | Load multiple annotations              |
+| `remove(annotationId)`     | Remove annotation by ID                |
+| `getEvents()`              | Get event emitter for highlight events |
 
-#### `removeHighlights(highlights)`
+### Event Handling
 
-Removes the specified highlights from the document.
+```typescript
+// Listen to highlight events
+annotator.getEvents().on('highlight', (event) => {
+  console.log('Highlight event:', event.type, event.payload);
+});
+```
 
-- `highlights`: Array of HighlightElement objects to remove
+## 🏗️ Architecture
 
-### Anchors Module
+The library uses a **smart anchoring system** with automatic fallback:
 
-## Selector Priority and Fallback Strategy
+1. **RangeSelector** (Most precise) - DOM node references
+2. **TextPositionSelector** (Reliable) - Character offsets
+3. **TextQuoteSelector** (Robust) - Text content matching
 
-The annotation library uses a sophisticated fallback strategy when anchoring annotations to ensure maximum reliability across different document states and environments.
+When one strategy fails, it automatically tries the next one, ensuring maximum reliability across different document states.
 
-### Priority Order
+## 📊 Advanced Usage
 
-When multiple selectors are available for an annotation, the library tries them in the following order:
+### Loading Multiple Annotations
 
-1. **RangeSelector** (Highest Priority)
+```typescript
+// Load existing annotations
+const annotations = await fetchAnnotations();
+annotator.load(annotations, document.body);
 
-   - Uses exact DOM node references with start/end containers and offsets
-   - Most precise and fastest when the document structure hasn't changed
-   - May fail if DOM nodes have been modified or regenerated
+// Context-aware filtering
+annotator.setContext({
+  documentId: 'doc-123',
+  pageNumber: 5,
+  userId: 'user-456',
+});
+```
 
-2. **TextPositionSelector** (Medium Priority)
+### Custom Event Handling
 
-   - Uses character offsets from the beginning of the document
-   - Reliable when document content is stable but DOM structure may change
-   - Less sensitive to minor DOM modifications
+```typescript
+const annotator = new Annotator({ allowWhitespace: true });
 
-3. **TextQuoteSelector** (Fallback Priority)
-   - Uses exact text content with optional prefix and suffix context
-   - Most robust against document changes, relies on text content matching
-   - Can handle significant DOM restructuring as long as text content remains
+annotator.getEvents().on('highlight', (event) => {
+  if (event.type === 'click') {
+    showAnnotationDetails(event.payload);
+  }
+});
+```
 
-### Quote Assertion
+## 🤝 Contributing
 
-When a `TextQuoteSelector` is present, the library performs **quote assertion** on results from `RangeSelector` and `TextPositionSelector`:
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
 
-- If the selected text doesn't match the expected quote text, a "quote mismatch" error is thrown
-- The system then falls back to the next selector in priority order
-- This ensures annotation accuracy and prevents anchoring to wrong content
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Write tests for your changes
+4. Ensure all tests pass (`npm test`)
+5. Commit your changes (`git commit -m 'Add amazing feature'`)
+6. Push to the branch (`git push origin feature/amazing-feature`)
+7. Open a Pull Request
 
-## Development
+## 🧪 Development
 
 ```bash
 # Install dependencies
-yarn install
-
-# Build the library
-yarn build
+npm install
 
 # Run tests
-yarn test
+npm test
+
+# Run tests with coverage
+npm run test:coverage
+
+# Build library
+npm run build
+
+# Lint code
+npm run lint
 ```
 
-## License
+## 📚 Examples
 
-MIT
+Check out the [`examples/`](examples/) directory for:
+
+- Basic usage examples
+- Advanced demo with full UI
+- TypeScript integration examples
+
+## 📄 License
+
+This project is licensed under the **BSD-2-Clause License** - see the [LICENSE](LICENSE) file for details.
+
+### Third-Party Attributions
+
+This library incorporates code from:
+
+- [Hypothesis Client](https://github.com/hypothesis/client) (BSD-2-Clause)
+- [dom-anchor-text-quote](https://github.com/tilgovi/dom-anchor-text-quote) (MIT)
+- [dom-anchor-text-position](https://github.com/tilgovi/dom-anchor-text-position) (MIT)
+
+See [NOTICE](NOTICE) for complete attribution details.
