@@ -23,7 +23,7 @@
     "lint-staged": "lint-staged"
   },
   "author": "Duccio Breschi <breschi@netseven.it>",
-  "license": "MIT",
+  "license": "BSD-2-Clause",
   "lint-staged": {
     "*.ts": [
       "eslint --fix",
@@ -50,5 +50,8 @@
     "tslib": "^2.0.0",
     "typescript": "^5.0.0",
     "typescript-eslint": "^8.29.1"
+  },
+  "dependencies": {
+    "approx-string-match": "^2.0.0"
   }
 }

@@ -21,6 +21,7 @@ The following files contain code derived from the Hypothesis client:
 - src/anchors/text-position-anchor.ts
 - src/anchors/text-quote-anchor.ts (partial)
 - src/anchors/range-anchor.ts
+- src/anchors/match-quote.ts
 
 Copyright (c) 2013-2019 Hypothes.is Project and contributors
 

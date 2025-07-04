@@ -14,7 +14,18 @@ export default {
         useESM: true,
       },
     ],
+    // Transform ES modules from node_modules
+    '^.+\\.m?js$': [
+      'ts-jest',
+      {
+        useESM: true,
+      },
+    ],
   },
+  transformIgnorePatterns: [
+    // Allow transformation of approx-string-match and other ES modules
+    'node_modules/(?!(approx-string-match)/)',
+  ],
   testMatch: [
     '**/*.spec.ts', // Unit tests
     'src/__tests__/integration/**/*.integration.spec.ts', // Integration tests

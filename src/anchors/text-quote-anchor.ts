@@ -50,11 +50,14 @@
 
 import type { QuerySelectorOptions, TextQuoteSelectorWithType } from '../types';
 import { TextPositionAnchor } from './text-position-anchor';
+import { matchQuote } from './match-quote';
 
-// The DiffMatchPatch bitap has a hard 32-character pattern length limit.
-const SLICE_LENGTH = 32;
-const SLICE_RE = new RegExp('(.|[\r\n]){1,' + String(SLICE_LENGTH) + '}', 'g');
-const CONTEXT_LENGTH = SLICE_LENGTH;
+export type QuoteMatchOptions = {
+  /** Expected position of match in text. See `matchQuote`. */
+  hint?: number;
+};
+
+const CONTEXT_LENGTH = 32;
 
 /**
  * Converts between `TextQuoteSelector` selectors and `Range` objects.
@@ -194,34 +197,12 @@ export class TextQuoteAnchor {
   }
 
   /**
-   * Split text into slices that are at most SLICE_LENGTH characters long
+   * @param {Object} [options]
+   *   @param {number} [options.hint] -
+   *     Offset hint to disambiguate matches
    */
-  private getTextSlices(text: string): string[] {
-    return text.match(SLICE_RE) || [];
-  }
-
-  /**
-   * Find the position of a pattern in text, checking each slice separately
-   */
-  private findPattern(text: string, pattern: string, startPos = 0): number {
-    // If pattern is longer than SLICE_LENGTH, split it into slices
-    const patternSlices = this.getTextSlices(pattern);
-    if (patternSlices.length === 0) return -1;
-
-    // Find the first slice
-    const pos = text.indexOf(patternSlices[0], startPos);
-    if (pos === -1) return -1;
-
-    // If we have more slices, verify they all match
-    if (patternSlices.length > 1) {
-      const fullMatch = text.substr(pos, pattern.length);
-      if (fullMatch !== pattern) {
-        // Try again from the next position
-        return this.findPattern(text, pattern, pos + 1);
-      }
-    }
-
-    return pos;
+  toRange(options: QuerySelectorOptions = {}) {
+    return this.toPositionAnchor(options).toRange();
   }
 
   /**
@@ -229,96 +210,15 @@ export class TextQuoteAnchor {
    *   @param {number} [options.hint] -
    *     Offset hint to disambiguate matches
    */
-  toRange(_options: QuerySelectorOptions = {}) {
-    // Get text content from the root
-    const text = TextQuoteAnchor.getTextContent(this.root);
-
-    // Try to find the exact text in the root content
-    let start = this.findPattern(text, this.exact);
-    if (start === -1) {
+  toPositionAnchor(options: QuoteMatchOptions = {}) {
+    const text = this.root.textContent!;
+    const match = matchQuote(text, this.exact, {
+      ...this.context,
+      hint: options.hint,
+    });
+    if (!match) {
       throw new Error('Quote not found');
     }
-
-    // If we have a prefix, verify it matches
-    if (this.context.prefix) {
-      const expectedPrefix = text.substring(
-        Math.max(0, start - this.context.prefix.length),
-        start
-      );
-      if (expectedPrefix !== this.context.prefix) {
-        // Try find another match
-        start = this.findPattern(text, this.exact, start + 1);
-        if (start === -1) {
-          throw new Error('Quote not found with matching prefix');
-        }
-      }
-    }
-
-    // If we have a suffix, verify it matches
-    const end = start + this.exact.length;
-    if (this.context.suffix) {
-      const expectedSuffix = text.substring(
-        end,
-        end + this.context.suffix.length
-      );
-      if (expectedSuffix !== this.context.suffix) {
-        throw new Error('Quote not found with matching suffix');
-      }
-    }
-
-    // Create a range for the found position
-    const range = document.createRange();
-    let currentPos = 0;
-    let startNode: Node | null = null;
-    let endNode: Node | null = null;
-    let startOffset = 0;
-    let endOffset = 0;
-
-    // Walk through text nodes to find the start and end positions
-    const treeWalker = document.createTreeWalker(
-      this.root,
-      NodeFilter.SHOW_TEXT
-    );
-    while (treeWalker.nextNode()) {
-      const node = treeWalker.currentNode;
-      const nodeLength = node.textContent?.length || 0;
-
-      // Found start node
-      if (!startNode && currentPos + nodeLength > start) {
-        startNode = node;
-        startOffset = start - currentPos;
-      }
-
-      // Found end node
-      if (!endNode && currentPos + nodeLength >= end) {
-        endNode = node;
-        endOffset = end - currentPos;
-        break;
-      }
-
-      currentPos += nodeLength;
-    }
-
-    if (!startNode || !endNode) {
-      throw new Error('Could not find text nodes for range');
-    }
-
-    range.setStart(startNode, startOffset);
-    range.setEnd(endNode, endOffset);
-    return range;
-  }
-
-  /**
-   * @param {Object} [options]
-   *   @param {number} [options.hint] -
-   *     Offset hint to disambiguate matches
-   */
-  toPositionAnchor(options: QuerySelectorOptions = {}) {
-    const range = this.toRange(options);
-    return new TextPositionAnchor(
-      this.root,
-      range.startOffset,
-      range.endOffset
-    );
+    return new TextPositionAnchor(this.root, match.start, match.end);
   }
 }
