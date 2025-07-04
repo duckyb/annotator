@@ -1,5 +1,5 @@
 // Import the Annotator class
-import { Annotator } from '../dist/index.esm.js';
+import { Annotator } from './index.esm.js';
 
 // Initialize the annotator with the proper context
 let annotator;

@@ -11,6 +11,8 @@
   ],
   "scripts": {
     "build": "rollup -c rollup.config.mjs",
+    "build:docs": "yarn build && yarn copy-to-docs",
+    "copy-to-docs": "cp dist/index.esm.js docs/ && cp dist/index.esm.js.map docs/",
     "dev": "rollup -c rollup.config.mjs -w",
     "lint": "eslint 'src/**/*.ts'",
     "lint:fix": "eslint 'src/**/*.ts' --fix",
